@@ -1,0 +1,34 @@
+services:
+  photosharex:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ikhtiyor31/photosharex_api
+    restart: always
+    platform: linux/amd64
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - app_network
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=photosharex
+      - POSTGRES_USER=photosharexuser
+      - POSTGRES_PASSWORD=photosharex1234
+    volumes:
+      - postgres:/data/postgres
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres:
