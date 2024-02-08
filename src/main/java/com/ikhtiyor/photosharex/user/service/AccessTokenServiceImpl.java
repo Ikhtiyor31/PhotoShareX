@@ -20,7 +20,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 
     @Override
     public String createRefreshToken(String email) {
-        return createToken(email, 10, ChronoUnit.DAYS);
+        return createToken(email, 15, ChronoUnit.DAYS);
     }
 
     @Override
@@ -37,10 +37,10 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 
     private String createToken(String email, long amountToAdd, ChronoUnit chronoUnit) {
         return Jwts.builder()
+            .setClaims(createClaims(email))
             .setSubject(email)
             .setIssuedAt(Date.from(Instant.now()))
             .setExpiration(Date.from(Instant.now().plus(amountToAdd, chronoUnit)))
-            .setClaims(createClaims(email))
             .signWith(SignatureAlgorithm.HS256, jwtSecretKey)
             .compact();
     }

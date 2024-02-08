@@ -6,10 +6,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
 @Configuration
-public class AuthenticationManagerBean {
+public class AuthenticationManagerConfig {
 
     @Bean
-    public AuthenticationManager customAuthenticationManagerBean(AuthenticationConfiguration configuration) throws Exception {
+    public AuthenticationManager authenticationManager(
+        AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 

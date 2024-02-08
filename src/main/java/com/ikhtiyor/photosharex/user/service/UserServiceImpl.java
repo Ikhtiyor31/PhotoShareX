@@ -48,4 +48,12 @@ public class UserServiceImpl implements UserService {
 
         return new AccessTokenDTO(accessToken, refreshToken);
     }
+
+    @Override
+    public UserDTO getUserProfile(Long userId) {
+        var user =  userRepository.findById(userId).orElseThrow(
+            () -> new UsernameNotFoundException("User not found with userId: " + userId));
+
+        return new UserDTO(user.getId(), user.getName(), user.getEmail());
+    }
 }

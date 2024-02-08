@@ -9,6 +9,9 @@ import com.ikhtiyor.photosharex.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,4 +42,10 @@ public class UserController {
             .body(accessTokenDTO);
     }
 
+    @GetMapping(path = "/{userId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<UserDTO> getUserProfile(@PathVariable Long userId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(userService.getUserProfile(userId));
+    }
 }

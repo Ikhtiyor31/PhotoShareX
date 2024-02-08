@@ -10,4 +10,6 @@ public interface UserService {
     UserDTO createUser(UserResgisterRequest request);
 
     AccessTokenDTO authenticateUser(UserLoginRequest request);
+
+    UserDTO getUserProfile(Long userId);
 }

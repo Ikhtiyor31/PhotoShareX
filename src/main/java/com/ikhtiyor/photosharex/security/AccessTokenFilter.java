@@ -5,35 +5,34 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Service
+@Component
 public class AccessTokenFilter extends OncePerRequestFilter {
 
     private final RequestMatcher matcher =
         new AntPathRequestMatcher("/api/v1/**");
 
-    private final AuthenticationManager manager;
+    private AuthenticationManager manager;
 
     private final AuthenticationEntryPoint authenticationEntryPoint = (request, response, ex) -> {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().write(ex.getMessage());
     };
 
-    public AccessTokenFilter(AuthenticationManager manager) {
+    @Autowired
+    @Lazy
+    public void setAuthenticationManager(AuthenticationManager manager) {
         this.manager = manager;
     }
 
@@ -61,7 +60,7 @@ public class AccessTokenFilter extends OncePerRequestFilter {
     }
 
     private static String getTokenFromHeader(HttpServletRequest request) {
-        var token = request.getHeader("Access-Token");
+        var token = request.getHeader("Authorization");
 
         if (token != null && token.startsWith("Bearer ")) {
             return token.substring("Bearer ".length());
