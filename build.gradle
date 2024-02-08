@@ -29,6 +29,9 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt:0.9.1"
     implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
 
+    // LOG
+    implementation 'ch.qos.logback:logback-classic:1.4.12'
+
 }
 
 tasks.named('test') {

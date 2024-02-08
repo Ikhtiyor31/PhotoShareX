@@ -1,0 +1,24 @@
+<configuration>
+  <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="info">
+    <appender-ref ref="console" />
+  </root>
+
+  <!-- TODO() implemented later
+   <appender name="file" class="ch.qos.logback.core.FileAppender">
+    <file>${user.dir}/logs/example.log</file>
+    <encoder>
+      <pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="info">
+    <appender-ref ref="file" />
+  </root>-->
+
+</configuration>
