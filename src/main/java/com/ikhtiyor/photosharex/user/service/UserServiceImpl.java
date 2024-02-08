@@ -7,13 +7,16 @@ import com.ikhtiyor.photosharex.user.dto.Token;
 import com.ikhtiyor.photosharex.user.dto.UserLoginRequest;
 import com.ikhtiyor.photosharex.user.dto.UserResgisterRequest;
 import com.ikhtiyor.photosharex.user.dto.UserDTO;
+import com.ikhtiyor.photosharex.user.model.PasswordResetRequest;
 import com.ikhtiyor.photosharex.user.model.User;
 import com.ikhtiyor.photosharex.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -42,7 +45,7 @@ public class UserServiceImpl implements UserService {
                 "User not found with email: " + request.getEmail()));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("email or password is wrong!");
+            throw new UsernameNotFoundException("email or password is wrong!");
         }
         Token tokens = accessTokenService.createAccessToken(user.getEmail());
 
@@ -67,5 +70,18 @@ public class UserServiceImpl implements UserService {
         }
 
         throw new InvalidAccessTokenException("Invalid or expired refresh token");
+    }
+
+    @Override
+    public void resetPassword(PasswordResetRequest request) {
+        var user = userRepository.findUserByEmail(request.email()).orElseThrow(
+            () -> new UsernameNotFoundException("User not found with userId: " + request.email()));
+
+        if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
+            throw new UsernameNotFoundException("email or password is wrong!");
+        }
+
+        String encodePassword = passwordEncoder.encode(request.newPassword());
+        user.updatePassword(encodePassword);
     }
 }

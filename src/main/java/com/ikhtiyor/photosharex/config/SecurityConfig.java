@@ -34,7 +34,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,
                     "/api/v1/users/register",
                     "/api/v1/users/login",
-                    "/api/v1/users/refresh/**").permitAll()
+                    "/api/v1/users/refresh/**",
+                    "/api/v1/users/reset-password").permitAll()
+                .requestMatchers(HttpMethod.PATCH, "/api/v1/users/reset-password").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/users/**").hasRole("USER")
                 .anyRequest().authenticated()
             )

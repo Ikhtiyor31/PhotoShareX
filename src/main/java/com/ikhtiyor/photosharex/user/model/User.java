@@ -72,4 +72,7 @@ public class User extends AuditableEntity {
         return roleType;
     }
 
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }
