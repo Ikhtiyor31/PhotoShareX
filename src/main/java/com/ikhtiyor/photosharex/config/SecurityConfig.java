@@ -33,7 +33,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(matcherRegistry -> matcherRegistry
                 .requestMatchers(HttpMethod.POST,
                     "/api/v1/users/register",
-                    "/api/v1/users/login").permitAll()
+                    "/api/v1/users/login",
+                    "/api/v1/users/refresh/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/users/**").hasRole("USER")
                 .anyRequest().authenticated()
             )

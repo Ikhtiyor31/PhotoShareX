@@ -48,4 +48,10 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(userService.getUserProfile(userId));
     }
+
+    @PostMapping(path = "/refresh/{refreshToken}")
+    public ResponseEntity<AccessTokenDTO> refreshAccessToken(@PathVariable String refreshToken) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(userService.refreshAccessToken(refreshToken));
+    }
 }

@@ -1,7 +1,9 @@
 package com.ikhtiyor.photosharex.user.service;
 
 
+import com.ikhtiyor.photosharex.exception.InvalidAccessTokenException;
 import com.ikhtiyor.photosharex.user.dto.AccessTokenDTO;
+import com.ikhtiyor.photosharex.user.dto.Token;
 import com.ikhtiyor.photosharex.user.dto.UserLoginRequest;
 import com.ikhtiyor.photosharex.user.dto.UserResgisterRequest;
 import com.ikhtiyor.photosharex.user.dto.UserDTO;
@@ -42,18 +44,28 @@ public class UserServiceImpl implements UserService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("email or password is wrong!");
         }
+        Token tokens = accessTokenService.createAccessToken(user.getEmail());
 
-        String accessToken = accessTokenService.createAccessToken(user.getEmail());
-        String refreshToken = accessTokenService.createRefreshToken(user.getEmail());
-
-        return new AccessTokenDTO(accessToken, refreshToken);
+        return new AccessTokenDTO(tokens.getAccess(), tokens.getRefresh());
     }
 
     @Override
     public UserDTO getUserProfile(Long userId) {
-        var user =  userRepository.findById(userId).orElseThrow(
+        var user = userRepository.findById(userId).orElseThrow(
             () -> new UsernameNotFoundException("User not found with userId: " + userId));
 
         return new UserDTO(user.getId(), user.getName(), user.getEmail());
+    }
+
+    @Override
+    public AccessTokenDTO refreshAccessToken(String refreshToken) {
+        boolean isValidToken = accessTokenService.isValidToken(refreshToken);
+        if (isValidToken) {
+            var email = accessTokenService.extractUserEmail(refreshToken);
+            Token tokens = accessTokenService.createAccessToken(email);
+            return new AccessTokenDTO(tokens.getAccess(), tokens.getRefresh());
+        }
+
+        throw new InvalidAccessTokenException("Invalid or expired refresh token");
     }
 }

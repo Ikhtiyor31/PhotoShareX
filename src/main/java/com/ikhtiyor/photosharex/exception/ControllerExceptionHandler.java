@@ -60,8 +60,9 @@ public class ControllerExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(JwtException.class)
-    public ResponseEntity<CustomErrorMessage> handleJwtExpiredException(JwtException ex) {
+    @ExceptionHandler(InvalidAccessTokenException.class)
+    public ResponseEntity<CustomErrorMessage> handleJwtExpiredException(
+        InvalidAccessTokenException ex) {
         CustomErrorMessage body = new CustomErrorMessage(
             HttpStatus.NOT_FOUND.value(),
             LocalDateTime.now(),

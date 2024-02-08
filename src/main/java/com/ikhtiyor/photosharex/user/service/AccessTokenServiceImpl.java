@@ -1,5 +1,6 @@
 package com.ikhtiyor.photosharex.user.service;
 
+import com.ikhtiyor.photosharex.user.dto.Token;
 import io.jsonwebtoken.*;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -17,17 +18,15 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AccessTokenServiceImpl.class);
 
     @Override
-    public String createAccessToken(String email) {
-        return createToken(email, 10, ChronoUnit.MINUTES);
+    public Token createAccessToken(String email) {
+        String accessToken = createToken(email, 10, ChronoUnit.MINUTES);
+        String refreshToken = createToken(email, 15, ChronoUnit.DAYS);
+
+        return Token.of(accessToken, refreshToken);
     }
 
     @Override
-    public String createRefreshToken(String email) {
-        return createToken(email, 15, ChronoUnit.DAYS);
-    }
-
-    @Override
-    public String extractUsername(String token) {
+    public String extractUserEmail(String token) {
         var claims = parseClaims(token);
         return claims.get("email").toString();
     }

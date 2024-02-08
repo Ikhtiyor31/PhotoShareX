@@ -32,7 +32,7 @@ public class AccessTokenAuthenticationProvider implements AuthenticationProvider
             throw new BadCredentialsException("Invalid access token");
         }
 
-        var username = accessTokenService.extractUsername(token);
+        var username = accessTokenService.extractUserEmail(token);
         var user = userRepository
             .findUserByEmail(username)
             .orElseThrow(() -> new BadCredentialsException("Invalid access token"));

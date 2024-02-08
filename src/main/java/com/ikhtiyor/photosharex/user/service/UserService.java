@@ -12,4 +12,6 @@ public interface UserService {
     AccessTokenDTO authenticateUser(UserLoginRequest request);
 
     UserDTO getUserProfile(Long userId);
+
+    AccessTokenDTO refreshAccessToken(String refreshToken);
 }
