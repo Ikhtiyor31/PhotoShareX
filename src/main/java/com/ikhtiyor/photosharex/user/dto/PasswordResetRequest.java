@@ -1,4 +1,4 @@
-package com.ikhtiyor.photosharex.user.model;
+package com.ikhtiyor.photosharex.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;

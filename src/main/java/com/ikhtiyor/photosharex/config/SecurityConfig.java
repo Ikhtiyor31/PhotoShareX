@@ -38,6 +38,7 @@ public class SecurityConfig {
                     "/api/v1/users/reset-password").permitAll()
                 .requestMatchers(HttpMethod.PATCH, "/api/v1/users/reset-password").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/users/**").hasRole("USER")
+                .requestMatchers(HttpMethod.POST, "/api/v1/photos").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
             )
             .addFilterBefore(accessTokenFilter, UsernamePasswordAuthenticationFilter.class);

@@ -5,7 +5,7 @@ import com.ikhtiyor.photosharex.AuditableEntity;
 import com.ikhtiyor.photosharex.user.dto.UserResgisterRequest;
 import jakarta.persistence.*;
 
-@Entity(name = "User")
+@Entity
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(
     name = "user_email_unique", columnNames = "email"
 )})

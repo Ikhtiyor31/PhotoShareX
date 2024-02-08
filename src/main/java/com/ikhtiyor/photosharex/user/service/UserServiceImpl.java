@@ -7,7 +7,7 @@ import com.ikhtiyor.photosharex.user.dto.Token;
 import com.ikhtiyor.photosharex.user.dto.UserLoginRequest;
 import com.ikhtiyor.photosharex.user.dto.UserResgisterRequest;
 import com.ikhtiyor.photosharex.user.dto.UserDTO;
-import com.ikhtiyor.photosharex.user.model.PasswordResetRequest;
+import com.ikhtiyor.photosharex.user.dto.PasswordResetRequest;
 import com.ikhtiyor.photosharex.user.model.User;
 import com.ikhtiyor.photosharex.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
