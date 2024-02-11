@@ -17,9 +17,11 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "photos", indexes = {@Index(name = "idx_photo_user_id", columnList = "user_id")})
+@SQLRestriction("deleted=false")
 public class Photo extends AuditableEntity {
 
     @Id
@@ -51,22 +53,35 @@ public class Photo extends AuditableEntity {
     @Column(name = "visibility_type", nullable = false)
     private VisibilityType visibilityType = VisibilityType.PUBLIC;
 
+    @Column(name = "location", nullable = false)
+    private String location;
+
     public Photo(){}
 
-    public Photo(User user, String imageUrl, String title, String description, VisibilityType visibilityType) {
+    public Photo(
+        User user,
+        String imageUrl,
+        String title,
+        String description,
+        VisibilityType visibilityType,
+        String location
+    ) {
         this.user = user;
         this.imageUrl = imageUrl;
         this.title = title;
         this.description = description;
         this.visibilityType = visibilityType;
+        this.location = location;
     }
+
     public static Photo createOf(PhotoRequest request, User user) {
         return new Photo(
             user,
             request.imageUrl(),
             request.title(),
             request.description(),
-            request.visibilityType()
+            request.visibilityType(),
+            request.location()
         );
     }
 

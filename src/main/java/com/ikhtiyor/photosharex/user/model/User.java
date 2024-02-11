@@ -4,11 +4,13 @@ package com.ikhtiyor.photosharex.user.model;
 import com.ikhtiyor.photosharex.AuditableEntity;
 import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(
     name = "user_email_unique", columnNames = "email"
 )})
+@SQLRestriction("deleted=false")
 public class User extends AuditableEntity {
 
     @Id

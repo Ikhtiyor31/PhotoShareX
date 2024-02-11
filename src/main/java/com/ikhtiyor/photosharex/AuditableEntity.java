@@ -31,4 +31,8 @@ public abstract class AuditableEntity {
     public void setDeleted() {
         this.deleted = Boolean.TRUE;
     }
+
+    public LocalDateTime getCreatedAt() {
+        return getCreatedAt();
+    }
 }

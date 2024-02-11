@@ -8,9 +8,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "photo_albums")
+@SQLRestriction("deleted=false")
 public class PhotoAlbum extends AuditableEntity {
 
     @EmbeddedId
@@ -35,7 +37,7 @@ public class PhotoAlbum extends AuditableEntity {
         )
     )
     private Album album;
-
+    public PhotoAlbum() {}
     public PhotoAlbum(PhotoAlbumId photoAlbumId, Photo photo, Album album) {
         this.photoAlbumId = photoAlbumId;
         this.photo = photo;

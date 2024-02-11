@@ -18,7 +18,10 @@ public record PhotoRequest(
 
     @NotNull
     @JsonProperty("visibility_type")
-    VisibilityType visibilityType
+    VisibilityType visibilityType,
+
+    @NotBlank
+    String location
 ) {
 
 }

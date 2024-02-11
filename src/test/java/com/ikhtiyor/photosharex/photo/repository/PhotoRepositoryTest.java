@@ -37,7 +37,8 @@ class PhotoRepositoryTest {
             "http://localhost:8080/image_2024_02_11_23423.jpg",
             "New Image",
             "This is a beatiful image",
-            VisibilityType.PUBLIC
+            VisibilityType.PUBLIC,
+            "Seoul"
         );
         Photo photo = Photo.createOf(photoRequest, savedUser);
         Photo savedPhoto = photoRepository.save(photo);
