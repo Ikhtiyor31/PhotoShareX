@@ -4,19 +4,22 @@ import com.ikhtiyor.photosharex.annotation.Authenticated;
 import com.ikhtiyor.photosharex.photo.dto.PhotoRequest;
 import com.ikhtiyor.photosharex.photo.dto.PhotoUpdateRequest;
 import com.ikhtiyor.photosharex.photo.dto.UploadPhotoDTO;
+import com.ikhtiyor.photosharex.photo.enums.VisibilityType;
 import com.ikhtiyor.photosharex.photo.service.PhotoService;
 import com.ikhtiyor.photosharex.security.UserAdapter;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("api/v1/photos")
+@Validated
 public class PhotoController {
 
     private final PhotoService photoService;
@@ -54,6 +58,18 @@ public class PhotoController {
         photoService.updatePhotoDetail(request, photoId, userAdapter.getUser());
         return ResponseEntity.status(HttpStatus.OK)
             .body("photo updated!");
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PatchMapping("/{photoId}/change-visibility")
+    public ResponseEntity<String> changePhotoVisibility(
+        @PathVariable Long photoId,
+        @RequestParam("visibility_type") @NotNull(message = "visibility_type field cannot be null or empty") VisibilityType visibilityType,
+        @Authenticated UserAdapter userAdapter
+    ) {
+        photoService.changePhotoVisibility(photoId, visibilityType, userAdapter.getUser());
+        return ResponseEntity.status(HttpStatus.OK)
+            .body("visibility type updated");
     }
 
     @PreAuthorize("hasRole('USER')")

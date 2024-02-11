@@ -50,7 +50,6 @@ class PhotoRepositoryTest {
 
     @Test
     void givenPhotoEntity_whenUpdatedPhoto_thenSuccess() {
-
         UserRegisterRequest registerRequest = new UserRegisterRequest(
             "abdul",
             "test@gmail.com",
@@ -88,6 +87,36 @@ class PhotoRepositoryTest {
         assertThat(fetchedPhoto.getLocation()).isNotEqualTo(photoRequest.location());
         assertThat(fetchedPhoto.getTitle()).isNotEqualTo(photoRequest.title());
 
+    }
+
+    @Test
+    void givenPhotoEntity_whenChangePhotoVisibilityType_thenChangedToPrivate() {
+        UserRegisterRequest registerRequest = new UserRegisterRequest(
+            "abdul",
+            "test@gmail.com",
+            "aslfasjffasfd",
+            ""
+        );
+
+        User user = User.createOf(registerRequest, "encoasdfafalas");
+        User savedUser = userRepository.save(user);
+        PhotoRequest photoRequest = new PhotoRequest(
+            "http://localhost:8080/image_2024_02_11_23423.jpg",
+            "My old image",
+            "This is a beautiful old image",
+            VisibilityType.PUBLIC,
+            "Seoul"
+        );
+        Photo photo = Photo.createOf(photoRequest, savedUser);
+        Photo savedPhoto = photoRepository.save(photo);
+
+        Photo fetchedPhoto = photoRepository.findById(savedPhoto.getId()).get();
+
+        // When
+        fetchedPhoto.setVisibilityType(VisibilityType.PRIVATE);
+
+        // Then
+        assertThat(fetchedPhoto.getVisibilityType()).isEqualTo(VisibilityType.PRIVATE);
     }
 
 }

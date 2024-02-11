@@ -11,6 +11,7 @@ import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
 import com.ikhtiyor.photosharex.photo.dto.PhotoRequest;
 import com.ikhtiyor.photosharex.photo.dto.PhotoUpdateRequest;
 import com.ikhtiyor.photosharex.photo.dto.UploadPhotoDTO;
+import com.ikhtiyor.photosharex.photo.enums.VisibilityType;
 import com.ikhtiyor.photosharex.photo.model.Photo;
 import com.ikhtiyor.photosharex.photo.repository.PhotoRepository;
 import com.ikhtiyor.photosharex.user.model.User;
@@ -65,6 +66,19 @@ public class PhotoServiceImpl implements PhotoService {
         photo.setTitle(request.title());
         photo.setDescription(request.location());
         photo.setLocation(request.location());
+    }
+
+    @Override
+    public void changePhotoVisibility(Long photoId, VisibilityType visibilityType, User user) {
+        Photo photo = photoRepository.findById(photoId)
+            .orElseThrow(()-> new ResourceNotFoundException("Photo not found wih Id: " + photoId));
+
+        if (!photo.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("No permission to update photo");
+        }
+
+        photo.setVisibilityType(visibilityType);
+
     }
 
 
