@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface PhotoService {
 
     void createPhoto(PhotoRequest request, User user);
-
     UploadPhotoDTO uploadImage(MultipartFile image);
     Resource downloadImage(String imageName);
 }

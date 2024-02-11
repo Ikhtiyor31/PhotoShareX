@@ -5,7 +5,7 @@ import com.ikhtiyor.photosharex.exception.InvalidAccessTokenException;
 import com.ikhtiyor.photosharex.user.dto.AccessTokenDTO;
 import com.ikhtiyor.photosharex.user.dto.Token;
 import com.ikhtiyor.photosharex.user.dto.UserLoginRequest;
-import com.ikhtiyor.photosharex.user.dto.UserResgisterRequest;
+import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
 import com.ikhtiyor.photosharex.user.dto.UserDTO;
 import com.ikhtiyor.photosharex.user.dto.PasswordResetRequest;
 import com.ikhtiyor.photosharex.user.model.User;
@@ -31,8 +31,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO createUser(UserResgisterRequest request) {
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
+    public UserDTO createUser(UserRegisterRequest request) {
+        String encodedPassword = passwordEncoder.encode(request.password());
         User createdUser = userRepository.save(User.createOf(request, encodedPassword));
 
         return new UserDTO(createdUser.getId(), createdUser.getName(), createdUser.getEmail());
@@ -40,11 +40,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AccessTokenDTO authenticateUser(UserLoginRequest request) {
-        User user = userRepository.findUserByEmail(request.getEmail())
+        User user = userRepository.findUserByEmail(request.email())
             .orElseThrow(() -> new UsernameNotFoundException(
-                "User not found with email: " + request.getEmail()));
+                "User not found with email: " + request.email()));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new UsernameNotFoundException("email or password is wrong!");
         }
         Token tokens = accessTokenService.createAccessToken(user.getEmail());

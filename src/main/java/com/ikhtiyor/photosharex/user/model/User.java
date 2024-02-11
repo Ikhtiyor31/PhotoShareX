@@ -2,7 +2,7 @@ package com.ikhtiyor.photosharex.user.model;
 
 
 import com.ikhtiyor.photosharex.AuditableEntity;
-import com.ikhtiyor.photosharex.user.dto.UserResgisterRequest;
+import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
 import jakarta.persistence.*;
 
 @Entity
@@ -40,12 +40,12 @@ public class User extends AuditableEntity {
         this.roleType = RoleType.USER;
     }
 
-    public static User createOf(UserResgisterRequest request, String encodedPassword) {
+    public static User createOf(UserRegisterRequest request, String encodedPassword) {
         return new User(
-            request.getName(),
-            request.getEmail(),
+            request.name(),
+            request.email(),
             encodedPassword,
-            request.getProfilePhoto()
+            request.profilePhoto()
         );
     }
     public Long getId() {

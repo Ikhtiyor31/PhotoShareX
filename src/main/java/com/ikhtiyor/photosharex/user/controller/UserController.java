@@ -3,7 +3,7 @@ package com.ikhtiyor.photosharex.user.controller;
 
 import com.ikhtiyor.photosharex.user.dto.AccessTokenDTO;
 import com.ikhtiyor.photosharex.user.dto.UserLoginRequest;
-import com.ikhtiyor.photosharex.user.dto.UserResgisterRequest;
+import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
 import com.ikhtiyor.photosharex.user.dto.UserDTO;
 import com.ikhtiyor.photosharex.user.dto.PasswordResetRequest;
 import com.ikhtiyor.photosharex.user.service.UserService;
@@ -30,7 +30,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/register")
-    public ResponseEntity<String> register(@Valid @RequestBody UserResgisterRequest request) {
+    public ResponseEntity<String> register(@Valid @RequestBody UserRegisterRequest request) {
         UserDTO userDTO = userService.createUser(request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
