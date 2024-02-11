@@ -4,6 +4,10 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.4'
 }
 
+ext {
+    springCloudGcpVersion = "5.0.1"
+}
+
 group = 'com.ikhtiyor'
 version = '1.0.0'
 
@@ -20,10 +24,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'com.google.cloud:spring-cloud-gcp-starter-storage'
     testImplementation 'org.springframework.security:spring-security-test'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     runtimeOnly 'org.postgresql:postgresql'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
 
     // JsonWebToken
     implementation "io.jsonwebtoken:jjwt:0.9.1"
@@ -32,6 +38,17 @@ dependencies {
     // LOG
     implementation 'ch.qos.logback:logback-classic:1.4.12'
 
+    // FileUtils
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+    implementation 'net.coobird:thumbnailator:0.4.1'
+
+
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "com.google.cloud:spring-cloud-gcp-dependencies:$springCloudGcpVersion"
+    }
 }
 
 tasks.named('test') {

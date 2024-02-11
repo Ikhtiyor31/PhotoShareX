@@ -1,9 +1,10 @@
 package com.ikhtiyor.photosharex.exception;
 
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -19,62 +20,51 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ControllerExceptionHandler {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(ControllerExceptionHandler.class);
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<CustomErrorMessage> handleFlightNotFound(
-        UsernameNotFoundException ex) {
-
-        CustomErrorMessage body = new CustomErrorMessage(
-            LocalDateTime.now(),
-            ex.getMessage());
-
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    public ResponseEntity<CustomErrorMessage> handleUserNotFoundException(
+        UsernameNotFoundException ex
+    ) {
+        final var errorResponse = CustomErrorMessage.of(HttpStatus.NOT_FOUND, ex.getMessage());
+        LOGGER.error("Not found: {}", ex.getMessage(), ex);
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<CustomErrorMessage> handleAccessDeniedException(
-        AccessDeniedException ex) {
-        CustomErrorMessage body = new CustomErrorMessage(
-            LocalDateTime.now(),
-            ex.getMessage()
-        );
-
-        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+        AccessDeniedException ex
+    ) {
+        final var errorResponse = CustomErrorMessage.of(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        LOGGER.error("Access denied: {}", ex.getMessage(), ex);
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<CustomErrorMessage> handleBadCredential(
         BadCredentialsException ex
     ) {
-        CustomErrorMessage body = new CustomErrorMessage(
-            LocalDateTime.now(),
-            ex.getMessage()
-        );
-
-        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+        final var errorResponse = CustomErrorMessage.of(HttpStatus.FORBIDDEN, ex.getMessage());
+        LOGGER.error("Bad credentials: {}", ex.getMessage(), ex);
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<CustomErrorMessage> handleBadCredential(
+    public ResponseEntity<CustomErrorMessage> handleAuthenticationException(
         AuthenticationException ex
     ) {
-        CustomErrorMessage body = new CustomErrorMessage(
-            LocalDateTime.now(),
-            ex.getMessage()
-        );
-
-        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+        final var errorResponse = CustomErrorMessage.of(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        LOGGER.error("Authentication failed: {}", ex.getMessage(), ex);
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(InvalidAccessTokenException.class)
-    public ResponseEntity<CustomErrorMessage> handleJwtExpiredException(
-        InvalidAccessTokenException ex) {
-        CustomErrorMessage body = new CustomErrorMessage(
-            LocalDateTime.now(),
-            ex.getMessage()
-        );
-
-        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<CustomErrorMessage> handleInvalidAccessTokenException(
+        InvalidAccessTokenException ex
+    ) {
+        final var errorResponse = CustomErrorMessage.of(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        LOGGER.error("Invalid exception: {}", ex.getMessage(), ex);
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -83,11 +73,21 @@ public class ControllerExceptionHandler {
     ) {
         BindingResult result = ex.getBindingResult();
         final List<FieldError> fieldErrors = result.getFieldErrors();
-        CustomErrorMessage body = new CustomErrorMessage(
-            LocalDateTime.now(),
+        final var errorResponse = CustomErrorMessage.of(
+            HttpStatus.BAD_REQUEST,
             Arrays.toString(fieldErrors.toArray(new FieldError[0]))
         );
+        LOGGER.error("Validation failed: {}", ex.getMessage(), ex);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler({IllegalArgumentException.class, GCPStorageException.class,
+        InvalidImageException.class, ResourceNotFoundException.class})
+    public ResponseEntity<CustomErrorMessage> handleGenericException(
+        RuntimeException ex
+    ) {
+        final var errorResponse = CustomErrorMessage.of(HttpStatus.BAD_REQUEST, ex.getMessage());
+        LOGGER.error("An error occurred: {}", ex.getMessage(), ex);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }

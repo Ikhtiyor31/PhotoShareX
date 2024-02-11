@@ -1,0 +1,1 @@
+this is a test text for testing if a file type is not image

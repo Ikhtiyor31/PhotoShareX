@@ -15,3 +15,7 @@ spring:
           dialect: org.hibernate.dialect.PostgreSQLDialect
           format_sql: true
       show-sql: true
+gcp:
+  cloud:
+    bucket: photosharex
+    bucket-directory: image/
