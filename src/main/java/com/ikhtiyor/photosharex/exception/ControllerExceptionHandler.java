@@ -75,7 +75,7 @@ public class ControllerExceptionHandler {
         final List<FieldError> fieldErrors = result.getFieldErrors();
         final var errorResponse = CustomErrorMessage.of(
             HttpStatus.BAD_REQUEST,
-            Arrays.toString(fieldErrors.toArray(new FieldError[0]))
+            fieldErrors.get(0).getDefaultMessage()
         );
         LOGGER.error("Validation failed: {}", ex.getMessage(), ex);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);

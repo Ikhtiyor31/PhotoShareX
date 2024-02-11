@@ -5,13 +5,13 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public record PasswordResetRequest(
-    @Email
+    @Email(message = "email field cannot be null or empty")
     String email,
-    @NotBlank
+    @NotBlank(message = "old_password field cannot be null or empty")
     @JsonProperty("old_password")
     String oldPassword,
 
-    @NotBlank
+    @NotBlank(message = "new_password field cannot be null or empty")
     @JsonProperty("new_password")
     String newPassword
 ) {

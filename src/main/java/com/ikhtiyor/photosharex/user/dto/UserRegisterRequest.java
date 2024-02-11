@@ -6,16 +6,17 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public record UserRegisterRequest(
-    @NotBlank
+    @NotBlank(message = "name field cannot be null or empty")
     String name,
 
-    @Email
+    @NotBlank(message = "email field cannot be null or empty")
+    @Email(message = "invalid email address")
     String email,
 
-    @NotBlank
+    @NotBlank(message = "password field cannot be null or empty")
     String password,
 
-    @NotBlank
+    @NotBlank(message = "profile_photo field cannot be null or empty")
     @JsonProperty("profile_photo")
     String profilePhoto
 ) {

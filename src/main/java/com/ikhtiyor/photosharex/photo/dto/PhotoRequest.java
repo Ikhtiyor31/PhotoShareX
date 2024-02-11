@@ -6,21 +6,21 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record PhotoRequest(
-    @NotBlank
+    @NotBlank(message = "image_url field cannot be null or empty")
     @JsonProperty("image_url")
     String imageUrl,
 
-    @NotBlank
+    @NotBlank(message = "title field cannot be null or empty")
     String title,
 
-    @NotBlank
+    @NotBlank(message = "description field cannot be null or empty")
     String description,
 
-    @NotNull
+    @NotNull(message = "visibility_type field cannot null or empty")
     @JsonProperty("visibility_type")
     VisibilityType visibilityType,
 
-    @NotBlank
+    @NotBlank(message = "location field cannot null or empty")
     String location
 ) {
 
