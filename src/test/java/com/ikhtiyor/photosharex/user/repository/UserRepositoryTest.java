@@ -132,4 +132,25 @@ class UserRepositoryTest {
         assertThat(userOptional).isEqualTo(Optional.empty());
     }
 
+    @Test
+    void givenUserEntity_whenUserSetDeleted_thenReturnEmpty() {
+        // Given
+        UserRegisterRequest request = new UserRegisterRequest(
+            "test",
+            "test@gmail.com",
+            "password",
+            ""
+        );
+
+        User user = User.createOf(request, "myencodedpassword");
+        User savedUser = userRepository.save(user);
+
+        // When
+        savedUser.setDeleted();
+
+        // Then
+        Optional<User> foundUserOptional = userRepository.findUserByEmail(savedUser.getEmail());
+        assertThat(foundUserOptional).isEmpty();
+    }
+
 }
