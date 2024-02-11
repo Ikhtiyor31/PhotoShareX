@@ -35,9 +35,9 @@ public class ControllerExceptionHandler {
     public ResponseEntity<CustomErrorMessage> handleAccessDeniedException(
         AccessDeniedException ex
     ) {
-        final var errorResponse = CustomErrorMessage.of(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        final var errorResponse = CustomErrorMessage.of(HttpStatus.FORBIDDEN, ex.getMessage());
         LOGGER.error("Access denied: {}", ex.getMessage(), ex);
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(BadCredentialsException.class)

@@ -17,11 +17,13 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "photos", indexes = {@Index(name = "idx_photo_user_id", columnList = "user_id")})
 @SQLRestriction("deleted=false")
+@DynamicUpdate
 public class Photo extends AuditableEntity {
 
     @Id
@@ -107,5 +109,25 @@ public class Photo extends AuditableEntity {
 
     public VisibilityType getVisibilityType() {
         return visibilityType;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setVisibilityType(VisibilityType visibilityType) {
+        this.visibilityType = visibilityType;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

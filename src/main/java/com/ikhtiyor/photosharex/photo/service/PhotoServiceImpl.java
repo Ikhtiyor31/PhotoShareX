@@ -7,7 +7,9 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.ikhtiyor.photosharex.exception.GCPStorageException;
 import com.ikhtiyor.photosharex.exception.InvalidImageException;
+import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
 import com.ikhtiyor.photosharex.photo.dto.PhotoRequest;
+import com.ikhtiyor.photosharex.photo.dto.PhotoUpdateRequest;
 import com.ikhtiyor.photosharex.photo.dto.UploadPhotoDTO;
 import com.ikhtiyor.photosharex.photo.model.Photo;
 import com.ikhtiyor.photosharex.photo.repository.PhotoRepository;
@@ -20,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,6 +52,21 @@ public class PhotoServiceImpl implements PhotoService {
         photoRepository.save(photo);
 
     }
+
+    @Override
+    public void updatePhotoDetail(PhotoUpdateRequest request, Long photoId, User user) {
+        Photo photo = photoRepository.findById(photoId)
+            .orElseThrow(()-> new ResourceNotFoundException("Photo not found wih Id: " + photoId));
+
+        if (!photo.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("No permission to update photo");
+        }
+
+        photo.setTitle(request.title());
+        photo.setDescription(request.location());
+        photo.setLocation(request.location());
+    }
+
 
     @Override
     public UploadPhotoDTO uploadImage(MultipartFile image) {

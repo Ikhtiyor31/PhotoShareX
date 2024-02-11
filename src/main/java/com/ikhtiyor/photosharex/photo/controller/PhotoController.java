@@ -2,6 +2,7 @@ package com.ikhtiyor.photosharex.photo.controller;
 
 import com.ikhtiyor.photosharex.annotation.Authenticated;
 import com.ikhtiyor.photosharex.photo.dto.PhotoRequest;
+import com.ikhtiyor.photosharex.photo.dto.PhotoUpdateRequest;
 import com.ikhtiyor.photosharex.photo.dto.UploadPhotoDTO;
 import com.ikhtiyor.photosharex.photo.service.PhotoService;
 import com.ikhtiyor.photosharex.security.UserAdapter;
@@ -12,7 +13,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,12 +36,24 @@ public class PhotoController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping
     public ResponseEntity<String> createPhoto(
-        @Valid @RequestBody PhotoRequest request,
+        @RequestBody @Valid PhotoRequest request,
         @Authenticated UserAdapter userAdapter
     ) {
         photoService.createPhoto(request, userAdapter.getUser());
         return ResponseEntity.status(HttpStatus.CREATED)
             .body("photo created!");
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PatchMapping("/{photoId}")
+    public ResponseEntity<String> updatePhotoDetail(
+        @RequestBody @Valid PhotoUpdateRequest request,
+        @PathVariable Long photoId,
+        @Authenticated UserAdapter userAdapter
+    ) {
+        photoService.updatePhotoDetail(request, photoId, userAdapter.getUser());
+        return ResponseEntity.status(HttpStatus.OK)
+            .body("photo updated!");
     }
 
     @PreAuthorize("hasRole('USER')")
