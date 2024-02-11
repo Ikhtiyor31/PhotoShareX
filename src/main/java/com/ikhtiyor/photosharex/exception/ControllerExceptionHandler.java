@@ -1,7 +1,7 @@
 package com.ikhtiyor.photosharex.exception;
 
 
-import java.util.Arrays;
+import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,5 +89,12 @@ public class ControllerExceptionHandler {
         final var errorResponse = CustomErrorMessage.of(HttpStatus.BAD_REQUEST, ex.getMessage());
         LOGGER.error("An error occurred: {}", ex.getMessage(), ex);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<CustomErrorMessage> handleConstraintViolationException(ConstraintViolationException ex) {
+        final var errorResponse = CustomErrorMessage.of(HttpStatus.BAD_REQUEST, ex.getMessage());
+        LOGGER.error("Constraint violation: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }
