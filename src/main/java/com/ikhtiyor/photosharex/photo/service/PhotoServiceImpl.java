@@ -71,6 +71,18 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
+    public PhotoDTO getPhoto(Long photoId, User user) {
+        Photo photo = photoRepository.findById(photoId)
+            .orElseThrow(() -> new ResourceNotFoundException("Photo not found wih Id: " + photoId));
+
+        if (!photo.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("No permission to access this photo");
+        }
+
+        return PhotoDTO.from(photo);
+    }
+
+    @Override
     public void updatePhotoDetail(PhotoUpdateRequest request, Long photoId, User user) {
         Photo photo = photoRepository.findById(photoId)
             .orElseThrow(() -> new ResourceNotFoundException("Photo not found wih Id: " + photoId));

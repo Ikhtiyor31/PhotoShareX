@@ -17,6 +17,8 @@ public interface PhotoService {
 
     void createPhoto(PhotoRequest request, User user);
 
+    PhotoDTO getPhoto(Long photoId, User user);
+
     UploadPhotoDTO uploadImage(MultipartFile image);
 
     Resource downloadImage(String imageName);

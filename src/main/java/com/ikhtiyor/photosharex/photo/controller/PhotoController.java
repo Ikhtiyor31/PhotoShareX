@@ -64,6 +64,17 @@ public class PhotoController {
     }
 
     @PreAuthorize("hasRole('USER')")
+    @GetMapping("/{photoId}")
+    public ResponseEntity<PhotoDTO> getPhoto(
+        @PathVariable Long photoId,
+        @Authenticated UserAdapter userAdapter
+    ) {
+        PhotoDTO photoDTO = photoService.getPhoto(photoId, userAdapter.getUser());
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(photoDTO);
+    }
+
+    @PreAuthorize("hasRole('USER')")
     @PatchMapping("/{photoId}")
     public ResponseEntity<String> updatePhotoDetail(
         @RequestBody @Valid PhotoUpdateRequest request,
