@@ -9,6 +9,8 @@ import com.ikhtiyor.photosharex.photo.enums.VisibilityType;
 import com.ikhtiyor.photosharex.photo.service.PhotoService;
 import com.ikhtiyor.photosharex.security.UserAdapter;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -66,7 +68,7 @@ public class PhotoController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{photoId}")
     public ResponseEntity<PhotoDTO> getPhoto(
-        @PathVariable Long photoId,
+        @PathVariable @Min(value = 1, message = "photoId field must be an positive number") Long photoId,
         @Authenticated UserAdapter userAdapter
     ) {
         PhotoDTO photoDTO = photoService.getPhoto(photoId, userAdapter.getUser());
@@ -78,7 +80,7 @@ public class PhotoController {
     @PatchMapping("/{photoId}")
     public ResponseEntity<String> updatePhotoDetail(
         @RequestBody @Valid PhotoUpdateRequest request,
-        @PathVariable Long photoId,
+        @PathVariable @Min(value = 1, message = "photoId field must be an positive number") Long photoId,
         @Authenticated UserAdapter userAdapter
     ) {
         photoService.updatePhotoDetail(request, photoId, userAdapter.getUser());
@@ -89,7 +91,7 @@ public class PhotoController {
     @PreAuthorize("hasRole('USER')")
     @PatchMapping("/{photoId}/change-visibility")
     public ResponseEntity<String> changePhotoVisibility(
-        @PathVariable Long photoId,
+        @PathVariable @Min(value = 1, message = "photoId field must be an positive number") Long photoId,
         @RequestParam("visibility_type") @NotNull(message = "visibility_type field cannot be null or empty") VisibilityType visibilityType,
         @Authenticated UserAdapter userAdapter
     ) {
