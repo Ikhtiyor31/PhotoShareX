@@ -5,8 +5,8 @@ import com.ikhtiyor.photosharex.AuditableEntity;
 import com.ikhtiyor.photosharex.photo.model.Photo;
 import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
 import jakarta.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
@@ -36,8 +36,12 @@ public class User extends AuditableEntity {
     @Column(name = "role_type", nullable = false)
     private RoleType roleType;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Photo> photos = new HashSet<>();
+    @OneToMany(
+        mappedBy = "user",
+        cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+        orphanRemoval = true
+    )
+    private List<Photo> photos = new ArrayList<>();
 
     public User() {}
     public User(String name, String email, String password, String profilePhoto) {
@@ -82,5 +86,9 @@ public class User extends AuditableEntity {
 
     public void updatePassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    public List<Photo> getPhotos() {
+        return photos;
     }
 }
