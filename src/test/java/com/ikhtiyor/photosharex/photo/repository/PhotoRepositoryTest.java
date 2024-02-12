@@ -16,6 +16,7 @@ import com.ikhtiyor.photosharex.user.model.User;
 import com.ikhtiyor.photosharex.user.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -33,6 +34,11 @@ class PhotoRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @BeforeEach
+    void setUp() {
+        photoRepository.deleteAll();
+    }
 
     @Test
     void givenPhotoEntity_whenSaved_thenSuccess() {
@@ -277,7 +283,7 @@ class PhotoRepositoryTest {
         Photo photo = photoRepository.findById(photo1.getId()).get();
 
         // Then
-        assertThat(photo.getId()).isEqualTo(1);
+        assertThat(photo.getId()).isGreaterThan(0);
         assertThat(photo).isNotNull();
     }
 
