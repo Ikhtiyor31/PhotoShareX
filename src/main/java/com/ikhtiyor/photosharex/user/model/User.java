@@ -39,11 +39,14 @@ public class User extends AuditableEntity {
     @OneToMany(
         mappedBy = "user",
         cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-        orphanRemoval = true
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
     )
     private List<Photo> photos = new ArrayList<>();
 
-    public User() {}
+    public User() {
+    }
+
     public User(String name, String email, String password, String profilePhoto) {
         this.name = name;
         this.email = email;
@@ -60,6 +63,7 @@ public class User extends AuditableEntity {
             request.profilePhoto()
         );
     }
+
     public Long getId() {
         return id;
     }

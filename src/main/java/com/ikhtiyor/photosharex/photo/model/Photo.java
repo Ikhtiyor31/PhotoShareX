@@ -2,9 +2,12 @@ package com.ikhtiyor.photosharex.photo.model;
 
 
 import com.ikhtiyor.photosharex.AuditableEntity;
+import com.ikhtiyor.photosharex.comment.model.Comment;
+import com.ikhtiyor.photosharex.like.model.Like;
 import com.ikhtiyor.photosharex.photo.dto.PhotoRequest;
 import com.ikhtiyor.photosharex.photo.enums.VisibilityType;
 import com.ikhtiyor.photosharex.user.model.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,8 +20,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import org.apache.commons.lang3.builder.ToStringExclude;
+import java.util.ArrayList;
+import java.util.List;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -60,7 +65,25 @@ public class Photo extends AuditableEntity {
     @Column(name = "location", nullable = false)
     private String location;
 
-    public Photo(){}
+    @OneToMany(
+        mappedBy = "photo",
+        cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(
+        mappedBy = "photo",
+        cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    private List<Like> likes = new ArrayList<>();
+
+
+    public Photo() {
+    }
 
     public Photo(
         User user,
@@ -131,5 +154,13 @@ public class Photo extends AuditableEntity {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public List<Like> getLikes() {
+        return likes;
     }
 }

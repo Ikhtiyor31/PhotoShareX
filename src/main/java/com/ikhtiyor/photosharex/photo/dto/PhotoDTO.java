@@ -2,6 +2,7 @@ package com.ikhtiyor.photosharex.photo.dto;
 
 import com.ikhtiyor.photosharex.photo.enums.VisibilityType;
 import com.ikhtiyor.photosharex.photo.model.Photo;
+import java.time.LocalDateTime;
 
 public record PhotoDTO(
     Long id,
@@ -9,7 +10,9 @@ public record PhotoDTO(
     String title,
     String description,
     VisibilityType visibilityType,
-    String location
+    String location,
+
+    LocalDateTime createdAt
 ) {
 
     public static PhotoDTO from(Photo photo) {
@@ -19,7 +22,8 @@ public record PhotoDTO(
             photo.getTitle(),
             photo.getDescription(),
             photo.getVisibilityType(),
-            photo.getLocation()
+            photo.getLocation(),
+            photo.getCreatedAt()
         );
     }
 }

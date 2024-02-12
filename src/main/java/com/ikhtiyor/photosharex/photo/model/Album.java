@@ -1,6 +1,7 @@
 package com.ikhtiyor.photosharex.photo.model;
 
 import com.ikhtiyor.photosharex.AuditableEntity;
+import com.ikhtiyor.photosharex.photo.dto.AlbumRequest;
 import com.ikhtiyor.photosharex.user.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,6 +18,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Table(name = "albums")
 @SQLRestriction("deleted=false")
 public class Album extends AuditableEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,5 +39,34 @@ public class Album extends AuditableEntity {
 
     @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
+
+    public Album() {
+    }
+
+    public Album(User user, String title, String description) {
+        this.user = user;
+        this.title = title;
+        this.description = description;
+    }
+
+    public static Album of(AlbumRequest albumRequest, User user) {
+        return new Album(
+            user,
+            albumRequest.title(),
+            albumRequest.description()
+        );
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 
 }
