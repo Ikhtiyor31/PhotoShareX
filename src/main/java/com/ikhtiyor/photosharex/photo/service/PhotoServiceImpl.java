@@ -70,6 +70,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     }
 
+    @Transactional(readOnly = true)
     @Override
     public PhotoDTO getPhoto(Long photoId, User user) {
         Photo photo = photoRepository.findById(photoId)
