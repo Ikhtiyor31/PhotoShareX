@@ -1,6 +1,10 @@
 package com.ikhtiyor.photosharex.photo.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
 import com.ikhtiyor.photosharex.photo.dto.PhotoRequest;
@@ -10,9 +14,14 @@ import com.ikhtiyor.photosharex.photo.model.Photo;
 import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
 import com.ikhtiyor.photosharex.user.model.User;
 import com.ikhtiyor.photosharex.user.repository.UserRepository;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 @DataJpaTest
 class PhotoRepositoryTest {
@@ -119,4 +128,122 @@ class PhotoRepositoryTest {
         assertThat(fetchedPhoto.getVisibilityType()).isEqualTo(VisibilityType.PRIVATE);
     }
 
+    @Test
+    void givenPhotoEntity_whenFindByUser_ReturnsPageOfPhotos() {
+        // Given
+        UserRegisterRequest registerRequest = new UserRegisterRequest(
+            "abdul",
+            "test@gmail.com",
+            "aslfasjffasfd",
+            ""
+        );
+
+        User user = User.createOf(registerRequest, "encoasdfafalas");
+        User savedUser = userRepository.save(user);
+
+        PhotoRequest photoRequest = new PhotoRequest(
+            "http://localhost:8080/image_2024_02_11_23423.jpg",
+            "My old image",
+            "This is a beautiful old image",
+            VisibilityType.PUBLIC,
+            "Seoul"
+        );
+        Photo photo1 = Photo.createOf(photoRequest, savedUser);
+        Photo photo2 = Photo.createOf(photoRequest, savedUser);
+        photoRepository.save(photo1);
+        photoRepository.save(photo2);
+
+        PageRequest pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
+
+        // When
+        Page<Photo> photos = photoRepository.findByUser(savedUser, pageable);
+
+        // Then
+        assertThat(photos.getContent()).isNotNull();
+        assertEquals(2, photos.getTotalElements());
+    }
+
+    @Test
+    void shouldCheck_whenFindByUser_ReturnsPageOfOnlyMyPhotos() {
+        // Given
+        UserRegisterRequest registerRequest1 = new UserRegisterRequest(
+            "abdul",
+            "test@gmail.com",
+            "aslfasjffasfd",
+            "http://localhost:8080/my-profile-image.jpg"
+        );
+
+        User user1 = User.createOf(registerRequest1, "encoasdfafalas");
+        User savedUser1 = userRepository.save(user1);
+
+        UserRegisterRequest registerRequest2 = new UserRegisterRequest(
+            "abdul",
+            "test2@gmail.com",
+            "aslfasjffasfd",
+            "http://localhost:8080/my-second-profile-image.jpg"
+        );
+
+        User user2 = User.createOf(registerRequest2, "encoasdfafalas");
+        User savedUser2 = userRepository.save(user2);
+
+        PhotoRequest photoRequest = new PhotoRequest(
+            "http://localhost:8080/image_2024_02_11_23423.jpg",
+            "My old image",
+            "This is a beautiful old image",
+            VisibilityType.PUBLIC,
+            "Seoul"
+        );
+        Photo photo1 = Photo.createOf(photoRequest, savedUser1);
+        Photo photo2 = Photo.createOf(photoRequest, savedUser2);
+        photoRepository.save(photo1);
+        photoRepository.save(photo2);
+
+        PageRequest pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
+
+        // When
+        Page<Photo> photos = photoRepository.findByUser(savedUser1, pageable);
+        Page<Photo> photos2 = photoRepository.findByUser(savedUser2, pageable);
+
+        // Then
+        assertThat(photos.getContent()).isNotNull();
+        assertEquals(1, photos.getTotalElements());
+        assertThat(photos2.getTotalElements()).isEqualTo(1);
+        assertThat(photos2.getContent()).isNotNull();
+    }
+
+    @Test
+    void givenPhotoEntity_whenFindByUser_ReturnsEmptyPageOfPhotos_ifPhotoNotExist() {
+        // Given
+        UserRegisterRequest registerRequest = new UserRegisterRequest(
+            "abdul",
+            "test@gmail.com",
+            "aslfasjffasfd",
+            ""
+        );
+
+        User user = User.createOf(registerRequest, "encoasdfafalas");
+        User savedUser = userRepository.save(user);
+
+        PhotoRequest photoRequest = new PhotoRequest(
+            "http://localhost:8080/image_2024_02_11_23423.jpg",
+            "My old image",
+            "This is a beautiful old image",
+            VisibilityType.PUBLIC,
+            "Seoul"
+        );
+        Photo photo1 = Photo.createOf(photoRequest, savedUser);
+        Photo photo2 = Photo.createOf(photoRequest, savedUser);
+        photoRepository.save(photo1);
+        photoRepository.save(photo2);
+        photo1.setDeleted();
+        photo2.setDeleted();
+        PageRequest pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
+
+        // When
+        Page<Photo> photos = photoRepository.findByUser(savedUser, pageable);
+
+        // Then
+        assertThat(photos.getTotalElements()).isEqualTo(0);
+        assertThat(photos.getContent().size()).isEqualTo(0);
+    }
 }
