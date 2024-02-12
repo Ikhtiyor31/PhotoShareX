@@ -15,6 +15,7 @@ import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
 import com.ikhtiyor.photosharex.user.model.User;
 import com.ikhtiyor.photosharex.user.repository.UserRepository;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -245,5 +246,68 @@ class PhotoRepositoryTest {
         // Then
         assertThat(photos.getTotalElements()).isEqualTo(0);
         assertThat(photos.getContent().size()).isEqualTo(0);
+    }
+
+    @Test
+    void givenPhotoEntity_whenFindById_ReturnsPhoto() {
+        // Given
+        UserRegisterRequest registerRequest = new UserRegisterRequest(
+            "abdul",
+            "test@gmail.com",
+            "aslfasjffasfd",
+            "\"http://localhost:8080/my-profile-image.jpg"
+        );
+
+        User user = User.createOf(registerRequest, "encoasdfafalas");
+        User savedUser = userRepository.save(user);
+
+        PhotoRequest photoRequest = new PhotoRequest(
+            "http://localhost:8080/image_2024_02_11_23423.jpg",
+            "My old image",
+            "This is a beautiful old image",
+            VisibilityType.PUBLIC,
+            "Seoul"
+        );
+        Photo photo1 = Photo.createOf(photoRequest, savedUser);
+        Photo photo2 = Photo.createOf(photoRequest, savedUser);
+        photoRepository.save(photo1);
+        photoRepository.save(photo2);
+
+        // When
+        Photo photo = photoRepository.findById(photo1.getId()).get();
+
+        // Then
+        assertThat(photo.getId()).isEqualTo(1);
+        assertThat(photo).isNotNull();
+    }
+
+    @Test
+    void givenPhotoEntity_whenFindById_ReturnsEmpty_ifPhotoNotExist() {
+        // Given
+        UserRegisterRequest registerRequest = new UserRegisterRequest(
+            "abdul",
+            "test@gmail.com",
+            "aslfasjffasfd",
+            "\"http://localhost:8080/my-profile-image.jpg"
+        );
+
+        User user = User.createOf(registerRequest, "encoasdfafalas");
+        User savedUser = userRepository.save(user);
+
+        PhotoRequest photoRequest = new PhotoRequest(
+            "http://localhost:8080/image_2024_02_11_23423.jpg",
+            "My old image",
+            "This is a beautiful old image",
+            VisibilityType.PUBLIC,
+            "Seoul"
+        );
+        Photo photo = Photo.createOf(photoRequest, savedUser);
+        photoRepository.save(photo);
+        photoRepository.delete(photo);
+        // When
+        Optional<Photo> fetchPhoto = photoRepository.findById(photo.getId());
+
+        // Then
+        assertThat(fetchPhoto).isEmpty();
     }
 }
