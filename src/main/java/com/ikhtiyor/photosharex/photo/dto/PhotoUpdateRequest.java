@@ -11,6 +11,6 @@ public record PhotoUpdateRequest(
 
     @NotBlank(message = "location field cannot be null or empty")
     String location
-){
+) {
 
 }

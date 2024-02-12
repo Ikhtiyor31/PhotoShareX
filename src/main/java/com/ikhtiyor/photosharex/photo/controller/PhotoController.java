@@ -101,7 +101,7 @@ public class PhotoController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping(path = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<UploadPhotoDTO> uploadImage(@RequestParam("image") MultipartFile image) {
-        final var uploadPhotoDTO =  photoService.uploadImage(image);
+        final var uploadPhotoDTO = photoService.uploadImage(image);
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(uploadPhotoDTO);
     }
