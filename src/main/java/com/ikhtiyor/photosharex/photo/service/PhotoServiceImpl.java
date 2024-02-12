@@ -8,6 +8,7 @@ import com.google.cloud.storage.Storage;
 import com.ikhtiyor.photosharex.exception.GCPStorageException;
 import com.ikhtiyor.photosharex.exception.InvalidImageException;
 import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
+import com.ikhtiyor.photosharex.photo.dto.PhotoDTO;
 import com.ikhtiyor.photosharex.photo.dto.PhotoRequest;
 import com.ikhtiyor.photosharex.photo.dto.PhotoUpdateRequest;
 import com.ikhtiyor.photosharex.photo.dto.UploadPhotoDTO;
@@ -23,6 +24,10 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +51,17 @@ public class PhotoServiceImpl implements PhotoService {
         this.storage = storage;
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Page<PhotoDTO> getPhotoList(Pageable pageable, User user) {
+        PageRequest createdAtPageable = PageRequest.of(
+            pageable.getPageNumber(),
+            pageable.getPageSize(),
+            Direction.DESC, "createdAt");
+
+        return photoRepository.findByUser(user, createdAtPageable).map(PhotoDTO::from);
+    }
+
     @Override
     public void createPhoto(PhotoRequest request, User user) {
 
@@ -57,7 +73,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public void updatePhotoDetail(PhotoUpdateRequest request, Long photoId, User user) {
         Photo photo = photoRepository.findById(photoId)
-            .orElseThrow(()-> new ResourceNotFoundException("Photo not found wih Id: " + photoId));
+            .orElseThrow(() -> new ResourceNotFoundException("Photo not found wih Id: " + photoId));
 
         if (!photo.getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("No permission to update photo");
@@ -71,7 +87,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public void changePhotoVisibility(Long photoId, VisibilityType visibilityType, User user) {
         Photo photo = photoRepository.findById(photoId)
-            .orElseThrow(()-> new ResourceNotFoundException("Photo not found wih Id: " + photoId));
+            .orElseThrow(() -> new ResourceNotFoundException("Photo not found wih Id: " + photoId));
 
         if (!photo.getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("No permission to update photo");

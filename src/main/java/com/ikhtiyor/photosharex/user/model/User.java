@@ -2,8 +2,11 @@ package com.ikhtiyor.photosharex.user.model;
 
 
 import com.ikhtiyor.photosharex.AuditableEntity;
+import com.ikhtiyor.photosharex.photo.model.Photo;
 import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
@@ -32,6 +35,9 @@ public class User extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "role_type", nullable = false)
     private RoleType roleType;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Photo> photos = new HashSet<>();
 
     public User() {}
     public User(String name, String email, String password, String profilePhoto) {

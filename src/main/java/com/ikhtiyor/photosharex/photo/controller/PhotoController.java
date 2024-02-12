@@ -1,6 +1,7 @@
 package com.ikhtiyor.photosharex.photo.controller;
 
 import com.ikhtiyor.photosharex.annotation.Authenticated;
+import com.ikhtiyor.photosharex.photo.dto.PhotoDTO;
 import com.ikhtiyor.photosharex.photo.dto.PhotoRequest;
 import com.ikhtiyor.photosharex.photo.dto.PhotoUpdateRequest;
 import com.ikhtiyor.photosharex.photo.dto.UploadPhotoDTO;
@@ -8,9 +9,11 @@ import com.ikhtiyor.photosharex.photo.enums.VisibilityType;
 import com.ikhtiyor.photosharex.photo.service.PhotoService;
 import com.ikhtiyor.photosharex.security.UserAdapter;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +38,18 @@ public class PhotoController {
 
     public PhotoController(PhotoService photoService) {
         this.photoService = photoService;
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping
+    public ResponseEntity<Page<PhotoDTO>> getPhotoList(
+        @PageableDefault(size = 20) Pageable pageable,
+        @Authenticated UserAdapter userAdapter
+    ) {
+        Page<PhotoDTO> photoList = photoService.getPhotoList(pageable, userAdapter.getUser());
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(photoList);
+
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")

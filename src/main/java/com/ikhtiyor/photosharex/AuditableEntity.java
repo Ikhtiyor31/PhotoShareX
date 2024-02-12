@@ -33,6 +33,6 @@ public abstract class AuditableEntity {
     }
 
     public LocalDateTime getCreatedAt() {
-        return getCreatedAt();
+        return createdAt;
     }
 }
