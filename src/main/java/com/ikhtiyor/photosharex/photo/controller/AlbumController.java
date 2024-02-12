@@ -2,6 +2,7 @@ package com.ikhtiyor.photosharex.photo.controller;
 
 
 import com.ikhtiyor.photosharex.annotation.Authenticated;
+import com.ikhtiyor.photosharex.photo.dto.AddPhotosToAlbumRequest;
 import com.ikhtiyor.photosharex.photo.dto.AlbumRequest;
 import com.ikhtiyor.photosharex.photo.service.AlbumService;
 import com.ikhtiyor.photosharex.security.UserAdapter;
@@ -35,5 +36,16 @@ public class AlbumController {
         albumService.createAlbum(albumRequest, userAdapter.getUser());
         return ResponseEntity.status(HttpStatus.CREATED)
             .body("Album created!");
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/{albumId}/photos/{photoId}")
+    public ResponseEntity<String> addPhotosToAlbum(
+        @RequestBody AddPhotosToAlbumRequest request,
+        @Authenticated UserAdapter userAdapter
+    ) {
+        albumService.addPhotosToAlbum(request, userAdapter.getUser());
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body("Item add");
     }
 }

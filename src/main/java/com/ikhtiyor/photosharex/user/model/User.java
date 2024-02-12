@@ -2,6 +2,7 @@ package com.ikhtiyor.photosharex.user.model;
 
 
 import com.ikhtiyor.photosharex.AuditableEntity;
+import com.ikhtiyor.photosharex.photo.model.Album;
 import com.ikhtiyor.photosharex.photo.model.Photo;
 import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
 import jakarta.persistence.*;
@@ -40,9 +41,17 @@ public class User extends AuditableEntity {
         mappedBy = "user",
         cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
         orphanRemoval = true,
-        fetch = FetchType.LAZY
+        fetch = FetchType.EAGER
     )
     private List<Photo> photos = new ArrayList<>();
+
+    @OneToMany(
+        mappedBy = "user",
+        cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+        orphanRemoval = true,
+        fetch = FetchType.EAGER
+    )
+    private List<Album> albums = new ArrayList<>();
 
     public User() {
     }
@@ -94,5 +103,17 @@ public class User extends AuditableEntity {
 
     public List<Photo> getPhotos() {
         return photos;
+    }
+
+    public void addPhoto(Photo photo) {
+        photos.add(photo);
+    }
+
+    public void addAlbum(Album album) {
+        albums.add(album);
+    }
+
+    public List<Album> getAlbums() {
+        return albums;
     }
 }
