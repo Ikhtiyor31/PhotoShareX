@@ -47,8 +47,8 @@ public class AlbumController {
         @RequestBody PhotoIdsRequest request,
         @Authenticated UserAdapter userAdapter
     ) {
-        albumService.addPhotosToAlbum(albumId, request, userAdapter.getUser());
+        final var itemAddedMessage = albumService.addPhotosToAlbum(albumId, request, userAdapter.getUser());
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body("Item add");
+            .body(itemAddedMessage);
     }
 }

@@ -8,5 +8,5 @@ public interface AlbumService {
 
     void createAlbum(AlbumRequest albumRequest, User user);
 
-    void addPhotosToAlbum(Long albumId, PhotoIdsRequest request, User user);
+    String addPhotosToAlbum(Long albumId, PhotoIdsRequest request, User user);
 }

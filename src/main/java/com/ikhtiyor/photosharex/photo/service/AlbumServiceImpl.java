@@ -11,9 +11,9 @@ import com.ikhtiyor.photosharex.photo.repository.AlbumRepository;
 import com.ikhtiyor.photosharex.photo.repository.PhotoAlbumRepository;
 import com.ikhtiyor.photosharex.photo.repository.PhotoRepository;
 import com.ikhtiyor.photosharex.user.model.User;
+import com.ikhtiyor.photosharex.utils.StringUtil;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +40,7 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public void addPhotosToAlbum(Long albumId, PhotoIdsRequest request, User user) {
+    public String addPhotosToAlbum(Long albumId, PhotoIdsRequest request, User user) {
         Album album = albumRepository.findById(albumId).orElseThrow(
             () -> new ResourceNotFoundException("Album not found with ID: " + albumId));
 
@@ -57,7 +57,8 @@ public class AlbumServiceImpl implements AlbumService {
             PhotoAlbum photoAlbum = new PhotoAlbum(photoAlbumId, photo, album);
             photoAlbums.add(photoAlbum);
         });
+        List<PhotoAlbum> savedPhotoAlbums = photoAlbumRepository.saveAll(photoAlbums);
 
-        photoAlbumRepository.saveAll(photoAlbums);
+        return StringUtil.formatItemAddMessage(savedPhotoAlbums.size());
     }
 }
