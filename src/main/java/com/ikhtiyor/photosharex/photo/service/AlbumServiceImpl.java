@@ -41,14 +41,8 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     public String addPhotosToAlbum(Long albumId, PhotoIdsRequest request, User user) {
-        Album album = albumRepository.findById(albumId).orElseThrow(
-            () -> new ResourceNotFoundException("Album not found with ID: " + albumId));
-
-        List<Photo> photos = photoRepository.findByUserAndIdIn(user, request.photoIds());
-
-        if (photos.isEmpty()) {
-            throw new ResourceNotFoundException("No photos found for the provided photoIds");
-        }
+        Album album = getAlbum(albumId);
+        List<Photo> photos = getPhotos(request, user);
 
         List<PhotoAlbum> photoAlbums = new ArrayList<>();
 
@@ -60,5 +54,20 @@ public class AlbumServiceImpl implements AlbumService {
         List<PhotoAlbum> savedPhotoAlbums = photoAlbumRepository.saveAll(photoAlbums);
 
         return StringUtil.formatItemAddMessage(savedPhotoAlbums.size());
+    }
+
+    private Album getAlbum(Long albumId) {
+        return albumRepository.findById(albumId).orElseThrow(
+            () -> new ResourceNotFoundException("Album not found with ID: " + albumId));
+    }
+
+    private List<Photo> getPhotos(PhotoIdsRequest request, User user) {
+        List<Photo> photos = photoRepository.findByUserAndIdIn(user, request.photoIds());
+
+        if (photos.isEmpty()) {
+            throw new ResourceNotFoundException("No photos found for the provided photoIds");
+        }
+
+        return photos;
     }
 }
