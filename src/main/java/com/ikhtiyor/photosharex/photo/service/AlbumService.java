@@ -10,4 +10,5 @@ public interface AlbumService {
 
     String addPhotosToAlbum(Long albumId, PhotoIdsRequest request, User user);
 
+    void updateAlbumCoverImage(Long albumId, String coverImageUrl, User user);
 }

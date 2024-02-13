@@ -54,10 +54,19 @@ public class AlbumServiceImpl implements AlbumService {
         List<PhotoAlbum> savedPhotoAlbums = photoAlbumRepository.saveAll(photoAlbums);
 
         if (album.getCoverImageUrl().isEmpty()) {
-            updateAlbumCoverImage(album, savedPhotoAlbums.get(0).getPhoto());
+            updateAlbumCoverImage(album, savedPhotoAlbums.get(0).getPhoto().getImageUrl());
         }
 
         return StringUtil.formatItemAddMessage(savedPhotoAlbums.size());
+    }
+
+    @Override
+    public void updateAlbumCoverImage(Long albumId, String coverImageUrl, User user) {
+        Album album = albumRepository.findByUserAndId(user, albumId).orElseThrow(
+            () -> new ResourceNotFoundException("Album not found with ID: " + albumId)
+        );
+
+        updateAlbumCoverImage(album, coverImageUrl);
     }
 
     private Album getAlbum(Long albumId) {
@@ -75,7 +84,7 @@ public class AlbumServiceImpl implements AlbumService {
         return photos;
     }
 
-    private void updateAlbumCoverImage(Album album, Photo photo) {
-        album.updateCoverImage(photo.getImageUrl());
+    private void updateAlbumCoverImage(Album album, String coverImageUrl) {
+        album.updateCoverImage(coverImageUrl);
     }
 }
