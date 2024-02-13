@@ -53,6 +53,10 @@ public class AlbumServiceImpl implements AlbumService {
         });
         List<PhotoAlbum> savedPhotoAlbums = photoAlbumRepository.saveAll(photoAlbums);
 
+        if (album.getCoverImageUrl().isEmpty()) {
+            updateAlbumCoverImage(album, savedPhotoAlbums.get(0).getPhoto());
+        }
+
         return StringUtil.formatItemAddMessage(savedPhotoAlbums.size());
     }
 
@@ -69,5 +73,9 @@ public class AlbumServiceImpl implements AlbumService {
         }
 
         return photos;
+    }
+
+    private void updateAlbumCoverImage(Album album, Photo photo) {
+        album.updateCoverImage(photo.getImageUrl());
     }
 }

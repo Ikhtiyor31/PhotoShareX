@@ -41,6 +41,9 @@ public class Album extends AuditableEntity {
     @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "cover_image_url", nullable = false, columnDefinition = "TEXT")
+    private String coverImageUrl;
+
     public Album() {
     }
 
@@ -48,6 +51,7 @@ public class Album extends AuditableEntity {
         this.user = user;
         this.title = title;
         this.description = description;
+        this.coverImageUrl = "";
     }
 
     public static Album of(AlbumRequest albumRequest, User user) {
@@ -70,4 +74,15 @@ public class Album extends AuditableEntity {
         return description;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void updateCoverImage(String coverImageUrl) {
+        this.coverImageUrl = coverImageUrl;
+    }
+
+    public String getCoverImageUrl() {
+        return coverImageUrl;
+    }
 }
