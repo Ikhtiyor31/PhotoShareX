@@ -2,6 +2,7 @@ package com.ikhtiyor.photosharex.photo.service;
 
 import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
 import com.ikhtiyor.photosharex.photo.dto.AlbumDTO;
+import com.ikhtiyor.photosharex.photo.dto.PhotoDTO;
 import com.ikhtiyor.photosharex.photo.dto.PhotoIdsRequest;
 import com.ikhtiyor.photosharex.photo.dto.AlbumRequest;
 import com.ikhtiyor.photosharex.photo.model.Album;
@@ -15,7 +16,9 @@ import com.ikhtiyor.photosharex.user.model.User;
 import com.ikhtiyor.photosharex.utils.StringUtil;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -66,14 +69,14 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     public void updateAlbumCoverImage(Long albumId, Long photoId, User user) {
-        Album album = albumRepository.findByUserAndId(user, albumId).orElseThrow(
-            () -> new ResourceNotFoundException("Album not found with ID: " + albumId));
+        Album album = getAlbumByUserAndId(albumId, user);
         Photo photo = photoRepository.findByUserAndId(user, photoId).orElseThrow(
             () -> new ResourceNotFoundException("Photo not found with ID: " + photoId));
 
         PhotoAlbumId photoAlbumId = new PhotoAlbumId(photo.getId(), album.getId());
         PhotoAlbum photoAlbum = photoAlbumRepository.findPhotoAlbumByPhotoAlbumId(photoAlbumId)
-            .orElseThrow(() -> new ResourceNotFoundException("PhotoAlbum not found with provided ID"));
+            .orElseThrow(
+                () -> new ResourceNotFoundException("PhotoAlbum not found with provided ID"));
 
         updateAlbumCoverImage(photoAlbum.getAlbum(), photoAlbum.getPhoto());
     }
@@ -87,6 +90,32 @@ public class AlbumServiceImpl implements AlbumService {
 
         return albumRepository.findByUser(user, createdAtPageable)
             .map(AlbumDTO::from);
+    }
+
+    @Override
+    public Page<PhotoDTO> getAlbumPhotos(Pageable pageable, Long albumId, User user) {
+        Album album = getAlbumByUserAndId(albumId, user);
+
+        PageRequest createdAtPageable = PageRequest.of(
+            pageable.getPageNumber(),
+            pageable.getPageSize(),
+            Direction.DESC, "createdAt");
+
+        Page<PhotoAlbum> photoAlbumPage = photoAlbumRepository.findPhotoAlbumsByAlbum_Id(
+            album.getId(),
+            createdAtPageable
+        );
+        List<Photo> photos = photoAlbumPage.getContent().stream()
+            .map(PhotoAlbum::getPhoto)
+            .collect(Collectors.toList());
+
+        return new PageImpl<>(photos, pageable, photoAlbumPage.getTotalElements()).map(
+            PhotoDTO::from);
+    }
+
+    private Album getAlbumByUserAndId(Long albumId, User user) {
+        return albumRepository.findByUserAndId(user, albumId).orElseThrow(
+            () -> new ResourceNotFoundException("Album not found with ID: " + albumId));
     }
 
     private Album getAlbum(Long albumId) {

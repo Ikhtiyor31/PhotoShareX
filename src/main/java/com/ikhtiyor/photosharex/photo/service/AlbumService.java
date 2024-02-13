@@ -1,6 +1,7 @@
 package com.ikhtiyor.photosharex.photo.service;
 
 import com.ikhtiyor.photosharex.photo.dto.AlbumDTO;
+import com.ikhtiyor.photosharex.photo.dto.PhotoDTO;
 import com.ikhtiyor.photosharex.photo.dto.PhotoIdsRequest;
 import com.ikhtiyor.photosharex.photo.dto.AlbumRequest;
 import com.ikhtiyor.photosharex.user.model.User;
@@ -16,4 +17,6 @@ public interface AlbumService {
     void updateAlbumCoverImage(Long albumId, Long photoId, User user);
 
     Page<AlbumDTO> getMyAlbums(Pageable pageable, User user);
+
+    Page<PhotoDTO> getAlbumPhotos(Pageable pageable, Long albumId, User user);
 }

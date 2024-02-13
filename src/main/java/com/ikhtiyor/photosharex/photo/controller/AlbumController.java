@@ -3,6 +3,7 @@ package com.ikhtiyor.photosharex.photo.controller;
 
 import com.ikhtiyor.photosharex.annotation.Authenticated;
 import com.ikhtiyor.photosharex.photo.dto.AlbumDTO;
+import com.ikhtiyor.photosharex.photo.dto.PhotoDTO;
 import com.ikhtiyor.photosharex.photo.dto.PhotoIdsRequest;
 import com.ikhtiyor.photosharex.photo.dto.AlbumRequest;
 import com.ikhtiyor.photosharex.photo.service.AlbumService;
@@ -55,7 +56,8 @@ public class AlbumController {
         @RequestBody PhotoIdsRequest request,
         @Authenticated UserAdapter userAdapter
     ) {
-        final var itemAddedMessage = albumService.addPhotosToAlbum(albumId, request, userAdapter.getUser());
+        final var itemAddedMessage = albumService.addPhotosToAlbum(albumId, request,
+            userAdapter.getUser());
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(itemAddedMessage);
     }
@@ -80,5 +82,21 @@ public class AlbumController {
         Page<AlbumDTO> albumDTOS = albumService.getMyAlbums(pageable, userAdapter.getUser());
         return ResponseEntity.status(HttpStatus.OK)
             .body(albumDTOS);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/{albumId}/photos")
+    public ResponseEntity<Page<PhotoDTO>> getAlbumPhotos(
+        @PathVariable @Min(value = 1, message = "albumId field cannot be null or empty") Long albumId,
+        @PageableDefault(size = 20) Pageable pageable,
+        @Authenticated UserAdapter userAdapter
+    ) {
+        Page<PhotoDTO> photoDTOS = albumService.getAlbumPhotos(
+            pageable,
+            albumId,
+            userAdapter.getUser()
+        );
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(photoDTOS);
     }
 }
