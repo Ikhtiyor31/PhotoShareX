@@ -289,7 +289,7 @@ class PhotoRepositoryTest {
             "abdul",
             "test@gmail.com",
             "aslfasjffasfd",
-            "\"http://localhost:8080/my-profile-image.jpg"
+            "http://localhost:8080/my-profile-image.jpg"
         );
 
         User user = User.createOf(registerRequest, "encoasdfafalas");
@@ -310,5 +310,60 @@ class PhotoRepositoryTest {
 
         // Then
         assertThat(fetchPhoto).isEmpty();
+    }
+
+    @Test
+    void givenPhotoEntity_whenFindUserAndId_thenReturnPhoto() {
+        // Given
+        PhotoRequest photoRequest = new PhotoRequest(
+            "http://localhost:8080/image_2024_02_11_23423.jpg",
+            "My old image",
+            "This is a beautiful old image",
+            VisibilityType.PUBLIC,
+            "Seoul"
+        );
+        User user = getUser("test@gmail.com");
+        Photo photo = Photo.createOf(photoRequest, user);
+        photoRepository.save(photo);
+        // When
+        Optional<Photo> fetchPhoto = photoRepository.findByUserAndId(user, photo.getId());
+
+        // Then
+        assertThat(fetchPhoto).isNotEmpty();
+        assertThat(fetchPhoto.get().getId()).isGreaterThan(0);
+    }
+
+    @Test
+    void givenPhotoEntity_whenFindUserAndId_thenReturnNull_ifPhotoNotExist() {
+        // Given
+        PhotoRequest photoRequest = new PhotoRequest(
+            "http://localhost:8080/image_2024_02_11_23423.jpg",
+            "My old image",
+            "This is a beautiful old image",
+            VisibilityType.PUBLIC,
+            "Seoul"
+        );
+        User user = getUser("test@gmail.com");
+        Photo photo = Photo.createOf(photoRequest, user);
+        photoRepository.save(photo);
+        User user1 = getUser("tourist@gmail.com");
+
+        // When
+        Optional<Photo> fetchPhoto = photoRepository.findByUserAndId(user1, photo.getId());
+
+        // Then
+        assertThat(fetchPhoto).isEqualTo(Optional.empty());
+    }
+
+    private User getUser(String email) {
+        UserRegisterRequest registerRequest = new UserRegisterRequest(
+            "abdul",
+            email,
+            "aslfasjffasfd",
+            "\"http://localhost:8080/my-profile-image.jpg"
+        );
+
+        User user = User.createOf(registerRequest, registerRequest.password());
+        return userRepository.save(user);
     }
 }
