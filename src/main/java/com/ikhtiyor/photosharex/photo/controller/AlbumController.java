@@ -2,15 +2,17 @@ package com.ikhtiyor.photosharex.photo.controller;
 
 
 import com.ikhtiyor.photosharex.annotation.Authenticated;
-import com.ikhtiyor.photosharex.photo.dto.AddPhotosToAlbumRequest;
+import com.ikhtiyor.photosharex.photo.dto.PhotoIdsRequest;
 import com.ikhtiyor.photosharex.photo.dto.AlbumRequest;
 import com.ikhtiyor.photosharex.photo.service.AlbumService;
 import com.ikhtiyor.photosharex.security.UserAdapter;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,12 +41,13 @@ public class AlbumController {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @PostMapping("/{albumId}/photos/{photoId}")
+    @PostMapping("/{albumId}")
     public ResponseEntity<String> addPhotosToAlbum(
-        @RequestBody AddPhotosToAlbumRequest request,
+        @PathVariable @Min(value = 1, message = "albumId field cannot be null or empty") Long albumId,
+        @RequestBody PhotoIdsRequest request,
         @Authenticated UserAdapter userAdapter
     ) {
-        albumService.addPhotosToAlbum(request, userAdapter.getUser());
+        albumService.addPhotosToAlbum(albumId, request, userAdapter.getUser());
         return ResponseEntity.status(HttpStatus.CREATED)
             .body("Item add");
     }

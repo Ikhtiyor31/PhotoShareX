@@ -1,7 +1,7 @@
 package com.ikhtiyor.photosharex.photo.service;
 
 import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
-import com.ikhtiyor.photosharex.photo.dto.AddPhotosToAlbumRequest;
+import com.ikhtiyor.photosharex.photo.dto.PhotoIdsRequest;
 import com.ikhtiyor.photosharex.photo.dto.AlbumRequest;
 import com.ikhtiyor.photosharex.photo.model.Album;
 import com.ikhtiyor.photosharex.photo.model.Photo;
@@ -13,6 +13,7 @@ import com.ikhtiyor.photosharex.photo.repository.PhotoRepository;
 import com.ikhtiyor.photosharex.user.model.User;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,11 +40,11 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public void addPhotosToAlbum(AddPhotosToAlbumRequest request, User user) {
-        Album album = albumRepository.findById(request.getAlbumId()).orElseThrow(()
-            -> new ResourceNotFoundException("Album not found with ID: " + request.getAlbumId()));
+    public void addPhotosToAlbum(Long albumId, PhotoIdsRequest request, User user) {
+        Album album = albumRepository.findById(albumId).orElseThrow(
+            () -> new ResourceNotFoundException("Album not found with ID: " + albumId));
 
-        List<Photo> photos = photoRepository.findByUserAndIdIn(user, request.getPhotoIds());
+        List<Photo> photos = photoRepository.findByUserAndIdIn(user, request.photoIds());
 
         if (photos.isEmpty()) {
             throw new ResourceNotFoundException("No photos found for the provided photoIds");
