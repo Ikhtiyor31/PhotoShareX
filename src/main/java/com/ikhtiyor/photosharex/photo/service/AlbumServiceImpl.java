@@ -23,7 +23,6 @@ public class AlbumServiceImpl implements AlbumService {
 
     private final AlbumRepository albumRepository;
     private final PhotoRepository photoRepository;
-
     private final PhotoAlbumRepository photoAlbumRepository;
 
     public AlbumServiceImpl(AlbumRepository albumRepository, PhotoRepository photoRepository,
@@ -54,19 +53,24 @@ public class AlbumServiceImpl implements AlbumService {
         List<PhotoAlbum> savedPhotoAlbums = photoAlbumRepository.saveAll(photoAlbums);
 
         if (album.getCoverImageUrl().isEmpty()) {
-            updateAlbumCoverImage(album, savedPhotoAlbums.get(0).getPhoto().getImageUrl());
+            updateAlbumCoverImage(album, savedPhotoAlbums.get(0).getPhoto());
         }
 
         return StringUtil.formatItemAddMessage(savedPhotoAlbums.size());
     }
 
     @Override
-    public void updateAlbumCoverImage(Long albumId, String coverImageUrl, User user) {
+    public void updateAlbumCoverImage(Long albumId, Long photoId, User user) {
         Album album = albumRepository.findByUserAndId(user, albumId).orElseThrow(
-            () -> new ResourceNotFoundException("Album not found with ID: " + albumId)
-        );
+            () -> new ResourceNotFoundException("Album not found with ID: " + albumId));
+        Photo photo = photoRepository.findByUserAndId(user, photoId).orElseThrow(
+            () -> new ResourceNotFoundException("Photo not found with ID: " + photoId));
 
-        updateAlbumCoverImage(album, coverImageUrl);
+        PhotoAlbumId photoAlbumId = new PhotoAlbumId(photo.getId(), album.getId());
+        PhotoAlbum photoAlbum = photoAlbumRepository.findPhotoAlbumByPhotoAlbumId(photoAlbumId)
+            .orElseThrow(() -> new ResourceNotFoundException("PhotoAlbum not found with provided"));
+
+        updateAlbumCoverImage(photoAlbum.getAlbum(), photoAlbum.getPhoto());
     }
 
     private Album getAlbum(Long albumId) {
@@ -84,7 +88,7 @@ public class AlbumServiceImpl implements AlbumService {
         return photos;
     }
 
-    private void updateAlbumCoverImage(Album album, String coverImageUrl) {
-        album.updateCoverImage(coverImageUrl);
+    private void updateAlbumCoverImage(Album album, Photo photo) {
+        album.updateCoverImage(photo.getImageUrl());
     }
 }

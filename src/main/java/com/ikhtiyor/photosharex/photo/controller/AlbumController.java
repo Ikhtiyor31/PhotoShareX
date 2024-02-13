@@ -56,13 +56,13 @@ public class AlbumController {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @PatchMapping("/{albumId}")
+    @PatchMapping("/{albumId}/photos/{photoId}")
     public ResponseEntity<String> updateAlbumCoverImage(
         @PathVariable @Min(value = 1, message = "albumId field cannot be null or empty") Long albumId,
-        @RequestParam("cover_image_url") String coverImageUrl,
+        @PathVariable @Min(value = 1, message = "photoId field cannot be null or empty") Long photoId,
         @Authenticated UserAdapter userAdapter
     ) {
-        albumService.updateAlbumCoverImage(albumId, coverImageUrl, userAdapter.getUser());
+        albumService.updateAlbumCoverImage(albumId, photoId, userAdapter.getUser());
         return ResponseEntity.status(HttpStatus.OK)
             .body("Album cover updated!");
     }
