@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -96,5 +97,14 @@ public class ControllerExceptionHandler {
         final var errorResponse = CustomErrorMessage.of(HttpStatus.BAD_REQUEST, ex.getMessage());
         LOGGER.error("Constraint violation: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<CustomErrorMessage> handleDataIntegrityViolationException(
+        DataIntegrityViolationException ex
+    ) {
+        final var errorResponse = CustomErrorMessage.of(HttpStatus.CONFLICT, ex.getMessage());
+        LOGGER.error("Failed to save data: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 }
