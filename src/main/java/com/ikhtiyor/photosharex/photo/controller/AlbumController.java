@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,17 +50,5 @@ public class AlbumController {
         final var itemAddedMessage = albumService.addPhotosToAlbum(albumId, request, userAdapter.getUser());
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(itemAddedMessage);
-    }
-
-    @PreAuthorize("hasRole('USER')")
-    @DeleteMapping("/{albumId}")
-    public ResponseEntity<String> removePhotosFromAlbum(
-        @PathVariable @Min(value = 1, message = "albumId field cannot be null or empty") Long albumId,
-        @RequestBody PhotoIdsRequest request,
-        @Authenticated UserAdapter userAdapter
-    ) {
-        final var itemRemovedMessage = albumService.removePhotosFromAlbum(albumId, request, userAdapter.getUser());
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(itemRemovedMessage);
     }
 }

@@ -9,6 +9,4 @@ public interface AlbumService {
     void createAlbum(AlbumRequest albumRequest, User user);
 
     String addPhotosToAlbum(Long albumId, PhotoIdsRequest request, User user);
-
-    String removePhotosFromAlbum(Long albumId, PhotoIdsRequest request, User user);
 }
