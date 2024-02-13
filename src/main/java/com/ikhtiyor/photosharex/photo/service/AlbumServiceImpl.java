@@ -68,7 +68,7 @@ public class AlbumServiceImpl implements AlbumService {
 
         PhotoAlbumId photoAlbumId = new PhotoAlbumId(photo.getId(), album.getId());
         PhotoAlbum photoAlbum = photoAlbumRepository.findPhotoAlbumByPhotoAlbumId(photoAlbumId)
-            .orElseThrow(() -> new ResourceNotFoundException("PhotoAlbum not found with provided"));
+            .orElseThrow(() -> new ResourceNotFoundException("PhotoAlbum not found with provided ID"));
 
         updateAlbumCoverImage(photoAlbum.getAlbum(), photoAlbum.getPhoto());
     }
