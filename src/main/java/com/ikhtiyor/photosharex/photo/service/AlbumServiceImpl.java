@@ -1,6 +1,7 @@
 package com.ikhtiyor.photosharex.photo.service;
 
 import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
+import com.ikhtiyor.photosharex.photo.dto.AlbumDTO;
 import com.ikhtiyor.photosharex.photo.dto.PhotoIdsRequest;
 import com.ikhtiyor.photosharex.photo.dto.AlbumRequest;
 import com.ikhtiyor.photosharex.photo.model.Album;
@@ -14,6 +15,10 @@ import com.ikhtiyor.photosharex.user.model.User;
 import com.ikhtiyor.photosharex.utils.StringUtil;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,6 +76,17 @@ public class AlbumServiceImpl implements AlbumService {
             .orElseThrow(() -> new ResourceNotFoundException("PhotoAlbum not found with provided ID"));
 
         updateAlbumCoverImage(photoAlbum.getAlbum(), photoAlbum.getPhoto());
+    }
+
+    @Override
+    public Page<AlbumDTO> getMyAlbums(Pageable pageable, User user) {
+        PageRequest createdAtPageable = PageRequest.of(
+            pageable.getPageNumber(),
+            pageable.getPageSize(),
+            Direction.DESC, "createdAt");
+
+        return albumRepository.findByUser(user, createdAtPageable)
+            .map(AlbumDTO::from);
     }
 
     private Album getAlbum(Long albumId) {

@@ -2,17 +2,22 @@ package com.ikhtiyor.photosharex.photo.controller;
 
 
 import com.ikhtiyor.photosharex.annotation.Authenticated;
+import com.ikhtiyor.photosharex.photo.dto.AlbumDTO;
 import com.ikhtiyor.photosharex.photo.dto.PhotoIdsRequest;
 import com.ikhtiyor.photosharex.photo.dto.AlbumRequest;
 import com.ikhtiyor.photosharex.photo.service.AlbumService;
 import com.ikhtiyor.photosharex.security.UserAdapter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,5 +70,15 @@ public class AlbumController {
         albumService.updateAlbumCoverImage(albumId, photoId, userAdapter.getUser());
         return ResponseEntity.status(HttpStatus.OK)
             .body("Album cover updated!");
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping
+    public ResponseEntity<Page<AlbumDTO>> getMyAlbums(
+        @PageableDefault(size = 20) Pageable pageable,
+        @Authenticated UserAdapter userAdapter) {
+        Page<AlbumDTO> albumDTOS = albumService.getMyAlbums(pageable, userAdapter.getUser());
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(albumDTOS);
     }
 }
