@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
@@ -43,6 +44,11 @@ public class Album extends AuditableEntity {
 
     @Column(name = "cover_image_url", nullable = false, columnDefinition = "TEXT")
     private String coverImageUrl;
+
+    @Column(name = "is_shared", nullable = false)
+    @ColumnDefault("false")
+    private Boolean isShared = false;
+
 
     public Album() {
     }
@@ -92,5 +98,13 @@ public class Album extends AuditableEntity {
 
     public String getCoverImageUrl() {
         return coverImageUrl;
+    }
+
+    public void setIsShared() {
+        this.isShared = Boolean.TRUE;
+    }
+
+    public Boolean getIsShared() {
+        return isShared;
     }
 }
