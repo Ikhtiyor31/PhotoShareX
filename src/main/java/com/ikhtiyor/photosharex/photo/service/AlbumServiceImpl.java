@@ -81,6 +81,7 @@ public class AlbumServiceImpl implements AlbumService {
         updateAlbumCoverImage(photoAlbum.getAlbum(), photoAlbum.getPhoto());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<AlbumDTO> getMyAlbums(Pageable pageable, User user) {
         PageRequest createdAtPageable = PageRequest.of(
@@ -92,6 +93,7 @@ public class AlbumServiceImpl implements AlbumService {
             .map(AlbumDTO::from);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<PhotoDTO> getAlbumPhotos(Pageable pageable, Long albumId, User user) {
         Album album = getAlbumByUserAndId(albumId, user);
