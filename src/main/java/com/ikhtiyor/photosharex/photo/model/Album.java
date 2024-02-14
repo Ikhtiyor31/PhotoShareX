@@ -78,6 +78,14 @@ public class Album extends AuditableEntity {
         return user;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public void updateCoverImage(String coverImageUrl) {
         this.coverImageUrl = coverImageUrl;
     }

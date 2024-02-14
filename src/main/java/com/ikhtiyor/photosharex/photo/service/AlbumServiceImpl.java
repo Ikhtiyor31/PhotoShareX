@@ -124,6 +124,13 @@ public class AlbumServiceImpl implements AlbumService {
         return StringUtil.formatItemRemoveMessage(photoAlbumIds.size());
     }
 
+    @Override
+    public void updateAlbum(Long albumId, AlbumRequest albumRequest, User user) {
+        Album album = getAlbumByUserAndId(albumId, user);
+        album.setTitle(albumRequest.title());
+        album.setDescription(albumRequest.description());
+    }
+
     private Album getAlbumByUserAndId(Long albumId, User user) {
         return albumRepository.findByUserAndId(user, albumId).orElseThrow(
             () -> new ResourceNotFoundException("Album not found with ID: " + albumId));
