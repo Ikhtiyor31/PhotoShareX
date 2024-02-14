@@ -147,6 +147,31 @@ class AlbumRepositoryTest {
         assertThat(fetchAlbum.getTotalElements()).isEqualTo(0);
     }
 
+    @Test
+    void givenAlbum_whenUpdateAlbum_thenReturnsUpdateAlbum() {
+        // Given
+        AlbumRequest albumRequest = new AlbumRequest(
+            "My album",
+            "this is my description about album"
+        );
+        String email = "test1@gmail.com";
+        User user = getUser(email);
+
+        Album album = Album.of(albumRequest, user);
+        albumRepository.save(album);
+        AlbumRequest albumRequest2 = new AlbumRequest(
+            "My updated album",
+            "this is my updated description about album"
+        );
+        final var fetchAlbum = albumRepository.findByUserAndId(user, album.getId()).get();
+        fetchAlbum.setTitle(albumRequest2.title());
+        fetchAlbum.setDescription(albumRequest2.description());
+        final var fetchUpdateAlbum = albumRepository.findByUserAndId(user, album.getId()).get();
+
+        assertThat(fetchUpdateAlbum.getTitle()).isEqualTo(albumRequest2.title());
+        assertThat(fetchUpdateAlbum.getDescription()).isEqualTo(albumRequest2.description());
+    }
+
 
     public User getUser(String email) {
         UserRegisterRequest request = new UserRegisterRequest(
