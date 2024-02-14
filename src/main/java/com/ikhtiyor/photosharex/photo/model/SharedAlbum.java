@@ -1,6 +1,7 @@
 package com.ikhtiyor.photosharex.photo.model;
 
 import com.ikhtiyor.photosharex.AuditableEntity;
+import com.ikhtiyor.photosharex.user.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
@@ -13,9 +14,9 @@ import jakarta.persistence.Table;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
-@Table(name = "share_photos")
+@Table(name = "shared_albums")
 @SQLRestriction("deleted=false")
-public class SharePhoto extends AuditableEntity {
+public class SharedAlbum extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,42 +24,42 @@ public class SharePhoto extends AuditableEntity {
 
     @ManyToOne
     @JoinColumn(
-        name = "photo_id",
+        name = "album_id",
         nullable = false,
         referencedColumnName = "id",
         foreignKey = @ForeignKey(
-            name = "share_photo_id_fk"
+            name = "shared_album_id_fk"
         ))
-    private Photo photo;
+    private Album album;
 
-    @Column(name = "shared_by_user_id", nullable = false)
-    private Long sharedByUserId;
+    @ManyToOne
+    @JoinColumn(
+        name = "shared_user_id",
+        nullable = false,
+        referencedColumnName = "id",
+        foreignKey = @ForeignKey(
+            name = "shared_album_user_id_fk"
+        )
+    )
+    private User sharedUser;
 
-    @Column(name = "shared_with_user_id", nullable = false)
-    private Long sharedWithUserId;
-
-    public SharePhoto() {
+    public SharedAlbum() {
     }
 
-    public SharePhoto(Photo photo, Long sharedByUserId, Long sharedWithUserId) {
-        this.photo = photo;
-        this.sharedByUserId = sharedByUserId;
-        this.sharedWithUserId = sharedWithUserId;
+    public SharedAlbum(Album album, User sharedUser) {
+        this.album = album;
+        this.sharedUser = sharedUser;
     }
 
     public Long getId() {
         return id;
     }
 
-    public Photo getPhoto() {
-        return photo;
+    public Album getAlbum() {
+        return album;
     }
 
-    public Long getSharedByUserId() {
-        return sharedByUserId;
-    }
-
-    public Long getSharedWithUserId() {
-        return sharedWithUserId;
+    public User getSharedUser() {
+        return sharedUser;
     }
 }
