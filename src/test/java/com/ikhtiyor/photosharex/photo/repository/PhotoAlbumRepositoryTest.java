@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Pageable;
 
 @DataJpaTest
 class PhotoAlbumRepositoryTest {
@@ -43,6 +44,7 @@ class PhotoAlbumRepositoryTest {
         photoAlbumRepository.deleteAll();
         userRepository.deleteAll();
         photoRepository.deleteAll();
+        entityManager.clear();
     }
 
     @Test
@@ -191,5 +193,58 @@ class PhotoAlbumRepositoryTest {
 
         assertFalse(photoAlbumByPhotoAlbumId1.isPresent());
         assertFalse(photoAlbumByPhotoAlbumId2.isPresent());
+    }
+
+    @Test
+    void givenPhotoAlbum_whenDeleteAllById_thenDeleteAllPhotosByGivenId() {
+        // Given
+        PhotoRequest photoRequest = new PhotoRequest(
+            "http://localhost:8080/image_2024_02_11_23423.jpg",
+            "My old image",
+            "This is a beautiful old image",
+            VisibilityType.PUBLIC,
+            "Seoul"
+        );
+        UserRegisterRequest userRegisterRequest = new UserRegisterRequest(
+            "test",
+            "test@gmail.com",
+            "password",
+            ""
+        );
+
+        User user = User.createOf(userRegisterRequest, userRegisterRequest.password());
+        Photo photo = Photo.createOf(photoRequest, user);
+        AlbumRequest albumRequest = new AlbumRequest(
+            "My new album",
+            "this is my description about album"
+        );
+
+        Album album = Album.of(albumRequest, user);
+        user.addAlbum(album);
+        user.addPhoto(photo);
+        user.addPhoto(photo);
+        user.addPhoto(photo);
+        user.addPhoto(photo);
+        user.addPhoto(photo);
+        userRepository.saveAndFlush(user);
+        PhotoAlbumId photoAlbumId = new PhotoAlbumId(photo.getId(), album.getId());
+        PhotoAlbum photoAlbum = new PhotoAlbum(photoAlbumId, photo, album);
+        photoAlbumRepository.saveAndFlush(photoAlbum);
+
+        List<PhotoAlbum> photoAlbumsByAlbumIds = photoAlbumRepository.findPhotoAlbumsByAlbum_Id(
+            album.getId(), Pageable.unpaged()).toList();
+        List<PhotoAlbumId> photoAlbumIdList = new ArrayList<>();
+        photoAlbumsByAlbumIds.forEach(
+            photoAlbumIds -> photoAlbumIdList.add(photoAlbumIds.getPhotoAlbumId()));
+
+        // When
+        photoAlbumRepository.deleteAllById(photoAlbumIdList);
+        final var fetchPhotoAlbumListAfterDeleted = photoAlbumRepository
+            .findPhotoAlbumsByAlbum_Id(album.getId(), Pageable.unpaged());
+
+        // Then
+        assertTrue(fetchPhotoAlbumListAfterDeleted.isEmpty());
+        assertThat(fetchPhotoAlbumListAfterDeleted.getTotalElements()).isEqualTo(0);
+        assertTrue(fetchPhotoAlbumListAfterDeleted.getContent().isEmpty());
     }
 }
