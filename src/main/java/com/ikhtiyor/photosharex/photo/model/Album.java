@@ -100,11 +100,11 @@ public class Album extends AuditableEntity {
         return coverImageUrl;
     }
 
-    public void setIsShared() {
+    public void setShared() {
         this.isShared = Boolean.TRUE;
     }
 
-    public Boolean getIsShared() {
+    public Boolean isShared() {
         return isShared;
     }
 }

@@ -51,6 +51,10 @@ public class SharedAlbum extends AuditableEntity {
         this.sharedUser = sharedUser;
     }
 
+    public static SharedAlbum createOf(Album album, User sharedUser) {
+        return new SharedAlbum(album, sharedUser);
+    }
+
     public Long getId() {
         return id;
     }
