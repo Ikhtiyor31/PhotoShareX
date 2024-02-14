@@ -19,4 +19,6 @@ public interface AlbumService {
     Page<AlbumDTO> getMyAlbums(Pageable pageable, User user);
 
     Page<PhotoDTO> getAlbumPhotos(Pageable pageable, Long albumId, User user);
+
+    String removePhotosFromAlbum(Long albumId, PhotoIdsRequest request, User user);
 }

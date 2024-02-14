@@ -113,6 +113,17 @@ public class AlbumServiceImpl implements AlbumService {
             PhotoDTO::from);
     }
 
+    @Override
+    public String removePhotosFromAlbum(Long albumId, PhotoIdsRequest request, User user) {
+        Album album = getAlbumByUserAndId(albumId, user);
+        List<PhotoAlbumId> photoAlbumIds = new ArrayList<>();
+        request.photoIds()
+            .forEach(photoId -> photoAlbumIds.add(new PhotoAlbumId(photoId, album.getId())));
+        photoAlbumRepository.deleteAllById(photoAlbumIds);
+
+        return StringUtil.formatItemRemoveMessage(photoAlbumIds.size());
+    }
+
     private Album getAlbumByUserAndId(Long albumId, User user) {
         return albumRepository.findByUserAndId(user, albumId).orElseThrow(
             () -> new ResourceNotFoundException("Album not found with ID: " + albumId));

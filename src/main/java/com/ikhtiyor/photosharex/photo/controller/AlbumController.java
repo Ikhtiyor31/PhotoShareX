@@ -99,4 +99,20 @@ public class AlbumController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(photoDTOS);
     }
+
+    @PreAuthorize("hasRole('USER')")
+    @DeleteMapping("/{albumId}/photos")
+    public ResponseEntity<String> removePhotosFromAlbum(
+        @PathVariable @Min(value = 1, message = "albumId field cannot be null or empty") Long albumId,
+        @RequestBody PhotoIdsRequest request,
+        @Authenticated UserAdapter userAdapter
+    ) {
+        final var itemRemovedMessage = albumService.removePhotosFromAlbum(
+            albumId,
+            request,
+            userAdapter.getUser()
+        );
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(itemRemovedMessage);
+    }
 }

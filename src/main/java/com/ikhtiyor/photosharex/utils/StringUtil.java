@@ -9,4 +9,12 @@ public final class StringUtil {
 
         return String.format("%d Items added", itemSize);
     }
+
+    public static String formatItemRemoveMessage(Integer itemSize) {
+        if (itemSize == 1) {
+            return String.format("%d Item removed", itemSize);
+        }
+
+        return String.format("%d Items removed", itemSize);
+    }
 }
