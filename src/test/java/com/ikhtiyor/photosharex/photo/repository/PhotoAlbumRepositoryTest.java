@@ -231,8 +231,9 @@ class PhotoAlbumRepositoryTest {
         PhotoAlbum photoAlbum = new PhotoAlbum(photoAlbumId, photo, album);
         photoAlbumRepository.saveAndFlush(photoAlbum);
 
-        List<PhotoAlbum> photoAlbumsByAlbumIds = photoAlbumRepository.findPhotoAlbumsByAlbum_Id(
-            album.getId(), Pageable.unpaged()).toList();
+        List<PhotoAlbum> photoAlbumsByAlbumIds = photoAlbumRepository
+            .findPhotoAlbumsByAlbum_Id(album.getId(), Pageable.unpaged()).toList();
+
         List<PhotoAlbumId> photoAlbumIdList = new ArrayList<>();
         photoAlbumsByAlbumIds.forEach(
             photoAlbumIds -> photoAlbumIdList.add(photoAlbumIds.getPhotoAlbumId()));
