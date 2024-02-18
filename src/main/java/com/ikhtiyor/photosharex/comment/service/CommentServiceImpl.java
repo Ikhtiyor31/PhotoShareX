@@ -1,8 +1,46 @@
 package com.ikhtiyor.photosharex.comment.service;
 
+import com.ikhtiyor.photosharex.comment.model.Comment;
+import com.ikhtiyor.photosharex.comment.repository.CommentRepository;
+import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
+import com.ikhtiyor.photosharex.photo.model.Album;
+import com.ikhtiyor.photosharex.photo.model.Photo;
+import com.ikhtiyor.photosharex.photo.repository.AlbumRepository;
+import com.ikhtiyor.photosharex.photo.repository.PhotoRepository;
+import com.ikhtiyor.photosharex.user.model.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class CommentServiceImpl implements CommentService {
 
+    private final AlbumRepository albumRepository;
+    private final PhotoRepository photoRepository;
+    private final CommentRepository commentRepository;
+
+    public CommentServiceImpl(AlbumRepository albumRepository,
+        PhotoRepository photoRepository,
+        CommentRepository commentRepository
+    ) {
+        this.albumRepository = albumRepository;
+        this.photoRepository = photoRepository;
+        this.commentRepository = commentRepository;
+    }
+
+    @Override
+    public void createComment(Long albumId, Long photoId, User user, String message) {
+        Photo photo = photoRepository.findById(photoId)
+            .orElseThrow(() -> new ResourceNotFoundException("Photo not found wih Id: " + photoId));
+
+        Album album = albumRepository.findByUserAndId(user, albumId)
+            .orElseThrow(() -> new ResourceNotFoundException("Album not found with ID:" + albumId));
+
+        if (!album.isShared()) {
+            throw new IllegalArgumentException("SharedAlbum not found");
+        }
+
+        Comment comment = Comment.createOf(photo, user, message);
+        commentRepository.save(comment);
+    }
 }

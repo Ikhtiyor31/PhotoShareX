@@ -57,6 +57,10 @@ public class Comment extends AuditableEntity {
         this.message = message;
     }
 
+    public static Comment createOf(Photo photo, User user, String message) {
+        return new Comment(photo, user, message);
+    }
+
     public Long getId() {
         return id;
     }
