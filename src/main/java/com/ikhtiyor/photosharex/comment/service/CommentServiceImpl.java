@@ -1,5 +1,6 @@
 package com.ikhtiyor.photosharex.comment.service;
 
+import com.ikhtiyor.photosharex.comment.dto.CommentDTO;
 import com.ikhtiyor.photosharex.comment.model.Comment;
 import com.ikhtiyor.photosharex.comment.repository.CommentRepository;
 import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
@@ -8,6 +9,8 @@ import com.ikhtiyor.photosharex.photo.model.Photo;
 import com.ikhtiyor.photosharex.photo.repository.AlbumRepository;
 import com.ikhtiyor.photosharex.photo.repository.PhotoRepository;
 import com.ikhtiyor.photosharex.user.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,5 +45,12 @@ public class CommentServiceImpl implements CommentService {
 
         Comment comment = Comment.createOf(photo, user, message);
         commentRepository.save(comment);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<CommentDTO> getComments(Long photoId, Pageable pageable, User user) {
+        return commentRepository.findByPhoto_IdAndUser(photoId, user, pageable)
+            .map(CommentDTO::from);
     }
 }
