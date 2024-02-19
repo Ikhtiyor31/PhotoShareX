@@ -1,6 +1,7 @@
 package com.ikhtiyor.photosharex.comment.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.ikhtiyor.photosharex.comment.model.Comment;
 import com.ikhtiyor.photosharex.photo.dto.PhotoRequest;
@@ -15,6 +16,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 @DataJpaTest
 class CommentRepositoryTest {
@@ -62,6 +65,33 @@ class CommentRepositoryTest {
         assertThat(comment.getId()).isGreaterThan(0);
         assertThat(comment.getMessage()).isEqualTo(commentMessage);
         assertThat(comment.getUser().getEmail()).isEqualTo(email);
+    }
+
+    @Test
+    void givenComment_whenFindByPhoto_IdAndUser_thenReturnsPageOfComments() {
+        // Given
+        User user = getUser("tourist@gmail.com");
+        PhotoRequest photoRequest = new PhotoRequest(
+            "http://localhost:8080/image_2024_02_11_23423.jpg",
+            "New Image",
+            "This is a beautiful image",
+            VisibilityType.PUBLIC,
+            "Seoul"
+        );
+        Photo photo = Photo.createOf(photoRequest, user);
+        photoRepository.save(photo);
+        Comment comment = Comment.createOf(photo, user, "Test comment");
+        commentRepository.save(comment);
+
+        Long photoId = photo.getId();
+        // When
+        Page<Comment> comments = commentRepository.findByPhoto_IdAndUser(photoId, user, PageRequest.of(0, 10));
+
+        // Then
+        assertTrue(comments.hasContent());
+        assertThat(comments.getTotalElements()).isEqualTo(1);
+        assertThat(comments.getContent().get(0).getMessage()).isEqualTo("Test comment");
+
     }
 
     private User getUser(String email) {
