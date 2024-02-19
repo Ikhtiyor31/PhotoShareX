@@ -49,6 +49,10 @@ public class Like extends AuditableEntity {
         this.user = user;
     }
 
+    public static Like createOf(Photo photo, User user) {
+        return new Like(photo, user);
+    }
+
     public Long getId() {
         return id;
     }
