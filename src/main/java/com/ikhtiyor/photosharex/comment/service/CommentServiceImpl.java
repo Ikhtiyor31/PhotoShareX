@@ -9,6 +9,7 @@ import com.ikhtiyor.photosharex.photo.model.Photo;
 import com.ikhtiyor.photosharex.photo.repository.AlbumRepository;
 import com.ikhtiyor.photosharex.photo.repository.PhotoRepository;
 import com.ikhtiyor.photosharex.user.model.User;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -52,5 +53,13 @@ public class CommentServiceImpl implements CommentService {
     public Page<CommentDTO> getComments(Long photoId, Pageable pageable, User user) {
         return commentRepository.findByPhoto_IdAndUser(photoId, user, pageable)
             .map(CommentDTO::from);
+    }
+
+    @Override
+    public void deleteComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+            () -> new ResourceNotFoundException("Comment not found with ID: " + commentId));
+
+        comment.setDeleted();
     }
 }

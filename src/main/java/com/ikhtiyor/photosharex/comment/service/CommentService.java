@@ -10,4 +10,6 @@ public interface CommentService {
     void createComment(Long albumId, Long photoId, User user, String message);
 
     Page<CommentDTO> getComments(Long photoId, Pageable pageable, User user);
+
+    void deleteComment(Long commentId);
 }
