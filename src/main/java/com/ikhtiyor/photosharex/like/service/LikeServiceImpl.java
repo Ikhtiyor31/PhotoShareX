@@ -42,4 +42,12 @@ public class LikeServiceImpl implements LikeService {
         Like like = Like.createOf(photo, user);
         likeRepository.save(like);
     }
+
+    @Override
+    public void removeLike(Long likeId) {
+        Like like = likeRepository.findById(likeId).orElseThrow(
+            () -> new ResourceNotFoundException("Like not found with ID: " + likeId));
+
+        like.setDeleted();
+    }
 }

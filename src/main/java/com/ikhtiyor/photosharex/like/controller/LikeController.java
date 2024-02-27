@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,5 +32,15 @@ public class LikeController {
     ) {
         likeService.createLike(albumId, photoId, userAdapter.getUser());
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @DeleteMapping("/{likeId}")
+    public ResponseEntity<String> removeLike(
+        @PathVariable @Min(value = 1, message = "commentId field must be an positive number") Long likeId
+    ) {
+        likeService.removeLike(likeId);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body("like removed!");
     }
 }
