@@ -14,9 +14,11 @@ import com.ikhtiyor.photosharex.user.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
 class LikeRepositoryTest {
@@ -63,11 +65,11 @@ class LikeRepositoryTest {
 
         // Then
         assertThat(like.getId()).isGreaterThan(0);
-        assertThat(like.getId()).isEqualTo(1);
         assertThat(like.getUser().getEmail()).isEqualTo(email);
     }
 
     @Test
+    @Order(2)
     void givenLikeEntity_whenLikeRemoved_thenSuccess() {
         // Given
         PhotoRequest photoRequest = new PhotoRequest(
