@@ -107,4 +107,22 @@ public class ControllerExceptionHandler {
         LOGGER.error("Failed to save data: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
+
+    @ExceptionHandler(EmailSendingFailException.class)
+    public ResponseEntity<CustomErrorMessage> handleDataIntegrityViolationException(
+        EmailSendingFailException ex
+    ) {
+        final var errorResponse = CustomErrorMessage.of(HttpStatus.BAD_REQUEST, ex.getMessage());
+        LOGGER.error("Email Verification Failed: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<CustomErrorMessage> handelUserAlreadyExistsException(
+        UserAlreadyExistsException ex
+    ) {
+        final var errorResponse = CustomErrorMessage.of(HttpStatus.BAD_REQUEST, ex.getMessage());
+        LOGGER.error(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
 }

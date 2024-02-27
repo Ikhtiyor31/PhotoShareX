@@ -2,6 +2,7 @@ package com.ikhtiyor.photosharex.user.service;
 
 
 import com.ikhtiyor.photosharex.exception.InvalidAccessTokenException;
+import com.ikhtiyor.photosharex.exception.UserAlreadyExistsException;
 import com.ikhtiyor.photosharex.user.dto.AccessTokenDTO;
 import com.ikhtiyor.photosharex.user.dto.Token;
 import com.ikhtiyor.photosharex.user.dto.UserLoginRequest;
@@ -32,6 +33,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO createUser(UserRegisterRequest request) {
+        userRepository.findUserByEmail(request.email()).ifPresent(user -> {
+            throw new UserAlreadyExistsException(
+                "User with email " + request.email() + " already exists");
+        });
         String encodedPassword = passwordEncoder.encode(request.password());
         User createdUser = userRepository.save(User.createOf(request, encodedPassword));
 

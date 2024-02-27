@@ -45,6 +45,8 @@ dependencies {
     // H2 DB
     runtimeOnly 'com.h2database:h2'
 
+    // Java Mail Sender
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 dependencyManagement {
