@@ -5,12 +5,15 @@ import com.ikhtiyor.photosharex.user.dto.UserLoginRequest;
 import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
 import com.ikhtiyor.photosharex.user.dto.UserDTO;
 import com.ikhtiyor.photosharex.user.dto.PasswordResetRequest;
+import com.ikhtiyor.photosharex.user.dto.VerificationCodeRequest;
 
 public interface UserService {
 
     UserDTO createUser(UserRegisterRequest request);
 
     AccessTokenDTO authenticateUser(UserLoginRequest request);
+
+    void verifyEmail(VerificationCodeRequest request);
 
     UserDTO getUserProfile(Long userId);
 

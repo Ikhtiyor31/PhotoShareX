@@ -43,7 +43,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    void givenUserEntity_whenSave_theSuccess() {
+    void givenUserEntity_whenSave_thenSuccess() {
         // Givne
         UserRegisterRequest request = new UserRegisterRequest(
             "abdul",

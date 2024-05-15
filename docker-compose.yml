@@ -4,16 +4,25 @@ services:
       context: .
       dockerfile: Dockerfile
     image: ikhtiyor31/photosharex_api
+    container_name: photosharex
     restart: always
     platform: linux/amd64
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS:/key/gcp-photosharex-storage-key.json
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/photosharex
+      - SPRING_DATASOURCE_USERNAME=photosharexuser
+      - SPRING_DATASOURCE_PASSWORD=photosharex1234
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     ports:
       - "8080:8080"
     depends_on:
       - postgres
+      - rabbitmq
     networks:
       - app_network
   postgres:
     image: postgres:latest
+    restart: always
     ports:
       - "5432:5432"
     container_name: postgres
@@ -23,6 +32,17 @@ services:
       - POSTGRES_PASSWORD=photosharex1234
     volumes:
       - postgres:/data/postgres
+    networks:
+      - app_network
+  rabbitmq:
+    image: rabbitmq:management
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    ports:
+      - "5672:5672"
+      - "15672:15672"
     networks:
       - app_network
 

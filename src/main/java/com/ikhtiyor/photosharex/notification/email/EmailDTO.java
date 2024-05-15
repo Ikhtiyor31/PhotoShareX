@@ -6,4 +6,12 @@ public record EmailDTO(
     String message
 ) {
 
+    @Override
+    public String toString() {
+        return "EmailDTO{" +
+            "to='" + to + '\'' +
+            ", title='" + title + '\'' +
+            ", message='" + message + '\'' +
+            '}';
+    }
 }

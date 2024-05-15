@@ -6,6 +6,7 @@ import com.ikhtiyor.photosharex.user.dto.UserLoginRequest;
 import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
 import com.ikhtiyor.photosharex.user.dto.UserDTO;
 import com.ikhtiyor.photosharex.user.dto.PasswordResetRequest;
+import com.ikhtiyor.photosharex.user.dto.VerificationCodeRequest;
 import com.ikhtiyor.photosharex.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,12 @@ public class UserController {
         AccessTokenDTO accessTokenDTO = userService.authenticateUser(request);
         return ResponseEntity.status(HttpStatus.OK)
             .body(accessTokenDTO);
+    }
+
+    @PostMapping(path = "/verify-email")
+    public String verifyEmail(@Valid @RequestBody VerificationCodeRequest request) {
+        userService.verifyEmail(request);
+        return "Ok";
     }
 
     @GetMapping(path = "/{userId}")

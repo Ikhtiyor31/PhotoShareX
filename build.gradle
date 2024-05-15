@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.2'
     id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 ext {
@@ -12,7 +13,6 @@ group = 'com.ikhtiyor'
 version = '1.0.0'
 
 java {
-    sourceCompatibility = '17'
 }
 
 repositories {
@@ -47,6 +47,18 @@ dependencies {
 
     // Java Mail Sender
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // Rabbitmq
+    implementation 'org.springframework.amqp:spring-rabbit-stream'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    testImplementation 'org.springframework.amqp:spring-rabbit-test'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    runtimeOnly 'org.springframework.boot:spring-boot-docker-compose'
+
+    // Spring Modulith Events API artifact
+    implementation 'org.springframework.modulith:spring-modulith-events-api:1.1.4'
+
+
 }
 
 dependencyManagement {
@@ -57,4 +69,7 @@ dependencyManagement {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+kotlin {
+    jvmToolchain(17)
 }

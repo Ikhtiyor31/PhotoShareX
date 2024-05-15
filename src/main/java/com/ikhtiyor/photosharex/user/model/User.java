@@ -8,6 +8,7 @@ import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
@@ -36,6 +37,9 @@ public class User extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "role_type", nullable = false)
     private RoleType roleType;
+
+    @Column(name = "enabled", columnDefinition = "boolean default false")
+    private boolean enabled;
 
     @OneToMany(
         mappedBy = "user",
@@ -97,6 +101,14 @@ public class User extends AuditableEntity {
         return roleType;
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(final boolean enabled) {
+        this.enabled = enabled;
+    }
+
     public void updatePassword(String newPassword) {
         this.password = newPassword;
     }
@@ -115,5 +127,42 @@ public class User extends AuditableEntity {
 
     public List<Album> getAlbums() {
         return albums;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        User user = (User) o;
+        return enabled == user.enabled && Objects.equals(id, user.id)
+            && Objects.equals(name, user.name) && Objects.equals(email, user.email)
+            && Objects.equals(password, user.password) && Objects.equals(
+            profilePhoto, user.profilePhoto) && roleType == user.roleType && Objects.equals(
+            photos, user.photos) && Objects.equals(albums, user.albums);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, email, password, profilePhoto, roleType, enabled, photos,
+            albums);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", email='" + email + '\'' +
+            ", password='" + password + '\'' +
+            ", profilePhoto='" + profilePhoto + '\'' +
+            ", roleType=" + roleType +
+            ", enabled=" + enabled +
+            ", photos=" + photos +
+            ", albums=" + albums +
+            '}';
     }
 }

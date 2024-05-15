@@ -30,7 +30,6 @@ public class EmailService {
             mimeMessage.setSubject(emailDto.title());
             mimeMessage.setText(emailDto.message());
             javaMailSender.send(mimeMessage);
-
             LOGGER.info("Verification email successfully sent to {}", emailDto.to());
         } catch (Exception e) {
             throw new EmailSendingFailException("Error sending verification email", e);

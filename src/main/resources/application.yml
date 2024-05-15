@@ -5,21 +5,20 @@ spring:
     name: photosharex
   datasource:
     password: photosharex1234
-    url: jdbc:postgresql://localhost:5432/photosharex
+    url: jdbc:postgresql://postgres:5432/photosharex
     username: photosharexuser
   jpa:
     hibernate:
       ddl-auto: create-drop
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         show_sql: true
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${GMAIL_ADDRESS}
-    password: ${GMAIL_PASS}
+    username: ${MAIL_ADDRESS}
+    password: ${MAIL_PASS}
     protocol: smtp
     properties:
       mail:
@@ -27,6 +26,11 @@ spring:
           auth: true
           starttls:
             enable: true
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: user
+    password: password
 gcp:
   cloud:
     bucket: photosharex
