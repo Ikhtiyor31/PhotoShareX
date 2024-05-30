@@ -16,7 +16,7 @@ public record UserRegisterRequest(
     String email,
 
     @NotNull(message = "password field cannot be null or empty")
-    @Size(min = 6, max = 15, message = "password must be between 6 to 15 characters")
+    @Size(min = 6, max = 15, message = "password must be between 6 and 15 characters")
     String password,
 
     @NotBlank(message = "profile_photo field cannot be null or empty")

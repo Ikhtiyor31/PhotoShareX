@@ -126,10 +126,10 @@ class UserServiceTest {
         var accessTokenDto = userService.authenticateUser(loginRequest);
 
         // Then
-        assertNotNull(accessTokenDto.getAccessToken());
-        assertNotNull(accessTokenDto.getRefreshToken());
-        assertFalse(accessTokenDto.getAccessToken().isEmpty());
-        assertFalse(accessTokenDto.getRefreshToken().isEmpty());
+        assertNotNull(accessTokenDto.accessToken());
+        assertNotNull(accessTokenDto.refreshToken());
+        assertFalse(accessTokenDto.accessToken().isEmpty());
+        assertFalse(accessTokenDto.refreshToken().isEmpty());
     }
 
     @Test
@@ -255,8 +255,8 @@ class UserServiceTest {
             .thenReturn(new Token("access-token", "refresh-token"));
         var accessTokenDto = userService.refreshAccessToken(fakeRefreshToken);
         // Then
-        assertThat(accessTokenDto.getAccessToken()).isNotNull();
-        assertThat(accessTokenDto.getRefreshToken()).isNotNull();
+        assertThat(accessTokenDto.accessToken()).isNotNull();
+        assertThat(accessTokenDto.refreshToken()).isNotNull();
     }
 
     @Test

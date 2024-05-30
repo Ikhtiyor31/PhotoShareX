@@ -3,8 +3,7 @@ FROM amazoncorretto:${JAVA_VERSION} as Build
 COPY . /app
 WORKDIR /app
 # needed to set google_application_credentials while building image
-COPY ./src/main/resources/gcp-photosharex-storage-key.json /key/gcp-photosharex-storage-key.json
-ENV GOOGLE_APPLICATION_CREDENTIALS=/key/gcp-photosharex-storage-key.json
+ENV GOOGLE_APPLICATION_CREDENTIALS=./src/main/resources/gcp-photosharex-storage-key.json
 ENV MAIL_ADDRESS=${MAIL_ADDRESS}
 
 
@@ -14,10 +13,8 @@ RUN ./gradlew --no-daemon build
 FROM amazoncorretto:${JAVA_VERSION} as platform
 ARG BUILD_JAR_PATH=build/libs/PhotoShareX-1.0.0.jar
 COPY --from=Build /app/${BUILD_JAR_PATH} .
-# needed to set google_application_credentials after build succes
-COPY ./src/main/resources/gcp-photosharex-storage-key.json /key/gcp-photosharex-storage-key.json
-ENV GOOGLE_APPLICATION_CREDENTIALS=/key/gcp-photosharex-storage-key.json
-ENV MAIL_ADDRESS=${MAIL_ADDRESS}
+COPY --from=Build /app/src/main/resources/gcp-photosharex-storage-key.json .
+
 ENV PORT 8080
 EXPOSE $PORT
 

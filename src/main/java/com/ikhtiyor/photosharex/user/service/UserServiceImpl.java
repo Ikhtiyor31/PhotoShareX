@@ -122,8 +122,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void resetPassword(PasswordResetRequest request) {
-        var user = userRepository.findUserByEmail(request.email()).orElseThrow(() ->
-            new UsernameNotFoundException("User not found with userId: " + request.email()));
+        var user = getUser(request.email());
 
         if (!user.isEnabled() || !passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
             throw new UsernameNotFoundException("email or password is wrong!");
@@ -134,7 +133,8 @@ public class UserServiceImpl implements UserService {
     }
 
     private User getUser(String email) {
-        return userRepository.findUserByEmail(email).orElseThrow(()
-            -> new UsernameNotFoundException("User not found with email: " + email));
+        return userRepository
+            .findUserByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
 }

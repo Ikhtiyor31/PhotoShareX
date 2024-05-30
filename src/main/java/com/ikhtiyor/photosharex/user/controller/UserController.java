@@ -1,6 +1,8 @@
 package com.ikhtiyor.photosharex.user.controller;
 
 
+import com.ikhtiyor.photosharex.annotation.Authenticated;
+import com.ikhtiyor.photosharex.security.UserAdapter;
 import com.ikhtiyor.photosharex.user.dto.AccessTokenDTO;
 import com.ikhtiyor.photosharex.user.dto.UserLoginRequest;
 import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
@@ -53,12 +55,16 @@ public class UserController {
 
     @GetMapping(path = "/{userId}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<UserDTO> getUserProfile(@PathVariable Long userId) {
+    public ResponseEntity<UserDTO> getUserProfile(
+        @PathVariable Long userId,
+        @Authenticated UserAdapter userAdapter
+    ) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(userService.getUserProfile(userId));
+            .body(userService.getUserProfile(userAdapter.getUser().getId()));
     }
 
-    @PostMapping(path = "/refresh/{refreshToken}")
+    @PostMapping(path = "/refresh-token/{refreshToken}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<AccessTokenDTO> refreshAccessToken(@PathVariable String refreshToken) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(userService.refreshAccessToken(refreshToken));

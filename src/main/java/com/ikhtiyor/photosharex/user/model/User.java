@@ -145,6 +145,10 @@ public class User extends AuditableEntity {
             photos, user.photos) && Objects.equals(albums, user.albums);
     }
 
+    public void setUserId(Long userId) {
+        this.id = userId;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(id, name, email, password, profilePhoto, roleType, enabled, photos,
