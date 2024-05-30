@@ -2,19 +2,23 @@ package com.ikhtiyor.photosharex.user.service;
 
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 import com.ikhtiyor.photosharex.exception.InvalidAccessTokenException;
+import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
 import com.ikhtiyor.photosharex.exception.UserAlreadyExistsException;
 import com.ikhtiyor.photosharex.user.dto.PasswordResetRequest;
 import com.ikhtiyor.photosharex.user.dto.RegistrationCompleteEvent;
 import com.ikhtiyor.photosharex.user.dto.Token;
+import com.ikhtiyor.photosharex.user.dto.UserDTO;
 import com.ikhtiyor.photosharex.user.dto.UserLoginRequest;
 import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
 import com.ikhtiyor.photosharex.user.dto.VerificationCodeRequest;
@@ -240,6 +244,20 @@ class UserServiceTest {
     }
 
     @Test
+    void shouldThrowException_WhenVerificationCodeNotFoundByEmail() {
+        // Given
+        var request = new VerificationCodeRequest("test@gmail.com", "1235");
+
+        // When
+        given(verificationCodeRepository.findTopByEmailOrderByIdDesc("test@gmail.com")).willReturn(Optional.empty());
+
+        // Then
+        assertThatThrownBy(() -> userService.verifyEmail(request))
+            .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("verification code not found with email: " + request.email());
+    }
+
+    @Test
     void getUserProfile() {
     }
 
@@ -287,5 +305,62 @@ class UserServiceTest {
         // Then
         assertThat(user.getPassword()).isNotEqualTo(oldPassword);
         assertThat(user.getPassword()).isEqualTo(newPassword);
+    }
+
+    @Test
+    void shouldThrowException_WhenOldPasswordAndNewPasswordMismatch() {
+        // Given
+        String oldPassword = "oldPassword";
+        String newPassword = "newPassword";
+        var request = new PasswordResetRequest("test@gmail.com", oldPassword, newPassword);
+        var userRequest = new UserRegisterRequest("", "", oldPassword, "");
+        var user = User.createOf(userRequest, oldPassword);
+        user.setEnabled(true);
+        // When
+        given(userRepository.findUserByEmail(request.email())).willReturn(Optional.of(user));
+        assertThatThrownBy(() -> userService.resetPassword(request))
+            .isInstanceOf(UsernameNotFoundException.class)
+            .hasMessage("email or password is wrong!");
+    }
+
+    @Test
+    public void testGetUserProfile_UserExists() {
+        // Given
+        UserRegisterRequest request = new UserRegisterRequest(
+            "ikhtiyor",
+            "new@example.com",
+            "password",
+            "http://localhost:8080/my-profile-photo.jpg"
+        );
+        var user = User.createOf(request, "asflasljkdfalskjf");
+        user.setUserId(1L);
+        // Arrange
+
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+
+        // Act
+        UserDTO userDTO = userService.getUserProfile(1L);
+
+        // Then
+        assertNotNull(userDTO);
+        assertThat(1L).isEqualTo(userDTO.getId());
+        assertThat(request.name()).isEqualTo(userDTO.getName());
+        assertThat(request.email()).isEqualTo(userDTO.getEmail());
+    }
+
+
+
+    @Test
+    public void testGetUserProfile_UserNotFound() {
+        // Given
+        Long userId = 1L;
+
+        // Arrange
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act & Assert
+       assertThatThrownBy(() -> userService.getUserProfile(userId))
+           .isInstanceOf(UsernameNotFoundException.class)
+           .hasMessage("User not found with userId: " + userId);
     }
 }

@@ -13,6 +13,7 @@ import com.ikhtiyor.photosharex.user.dto.UserDTO;
 import com.ikhtiyor.photosharex.user.dto.PasswordResetRequest;
 import com.ikhtiyor.photosharex.user.dto.VerificationCodeRequest;
 import com.ikhtiyor.photosharex.user.model.User;
+import com.ikhtiyor.photosharex.user.model.VerificationCode;
 import com.ikhtiyor.photosharex.user.repository.UserRepository;
 import com.ikhtiyor.photosharex.user.repository.VerificationCodeRepository;
 import java.time.LocalDateTime;
@@ -78,10 +79,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void verifyEmail(VerificationCodeRequest request) {
-        final var verificationCode = verificationCodeRepository
+        VerificationCode verificationCode = verificationCodeRepository
             .findTopByEmailOrderByIdDesc(request.email())
-            .orElseThrow(()
-                -> new ResourceNotFoundException("verification code not found with email: " + request.email()));
+            .orElseThrow(() -> new ResourceNotFoundException("verification code not found with email: " + request.email()));
 
         if (verificationCode.isExpired()) {
             throw new IllegalArgumentException("Verification code has expired!");
