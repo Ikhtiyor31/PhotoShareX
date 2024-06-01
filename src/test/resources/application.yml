@@ -35,5 +35,5 @@ spring:
     password: password
 gcp:
   cloud:
-    bucket: photosharex
+    bucket: photosharex-bucket
     bucket-directory: image/
