@@ -19,9 +19,9 @@ jobs:
           distribution: 'temurin'
       - name: Print environment variables
         run: |
-          echo "GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS:-Not Set}"
-          echo "MAIL_ADDRESS: ${MAIL_ADDRESS:-Not Set}"
-          echo "MAIL_PASS: ${MAIL_PASS:-Not Set}"
+          echo "GOOGLE_APPLICATION_CREDENTIALS: ${{ vars.GOOGLE_APPLICATION_CREDENTIALS }}"
+          echo "MAIL_ADDRESS: ${{vars.MAIL_ADDRESS}}"
+          echo "MAIL_PASS: ${{ vars.MAIL_PASS }}"
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ vars.GOOGLE_APPLICATION_CREDENTIALS }}
           MAIL_ADDRESS: ${{ vars.MAIL_ADDRESS }}
