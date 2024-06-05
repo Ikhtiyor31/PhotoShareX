@@ -21,15 +21,14 @@ jobs:
 
       - name: Decode and write GOOGLE_APPLICATION_CREDENTIALS
         run: |
-          echo "${{ vars.GOOGLE_APPLICATION_CREDENTIALS }}" | base64 --decode > $HOME/credentials.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS path is $HOME/credentials.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS: $GOOGLE_APPLICATION_CREDENTIALS_BASE64"
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ vars.GOOGLE_APPLICATION_CREDENTIALS }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ vars.GOOGLE_APPLICATION_CREDENTIALS_BASE64 }}
 
       - name: Build Docker Image
         run: docker-compose -f "docker-compose.yml" build
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: $HOME/credentials.json
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ vars.GOOGLE_APPLICATION_CREDENTIALS_BASE64 }}
           MAIL_ADDRESS: ${{ vars.MAIL_ADDRESS }}
           MAIL_PASS: ${{ vars.MAIL_PASS }}
 
