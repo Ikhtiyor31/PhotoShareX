@@ -19,21 +19,17 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Print environment variables
+      - name: Decode and write GOOGLE_APPLICATION_CREDENTIALS
         run: |
-          echo "repository variable : $REPOSITORY_VAR"
-          echo "GOOGLE_APPLICATION_CREDENTIALS: ${{ vars.GOOGLE_APPLICATION_CREDENTIALS }}"
-          echo "MAIL_ADDRESS: ${{ vars.MAIL_ADDRESS }}"
-          echo "MAIL_PASS: ${{ vars.MAIL_PASS }}"
+          echo "${{ vars.GOOGLE_APPLICATION_CREDENTIALS }}" | base64 --decode > $HOME/credentials.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS path is $HOME/credentials.json"
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ vars.GOOGLE_APPLICATION_CREDENTIALS }}
-          MAIL_ADDRESS: ${{ vars.MAIL_ADDRESS }}
-          MAIL_PASS: ${{ vars.MAIL_PASS }}
 
-      - name: Start containers
+      - name: Build Docker Image
         run: docker-compose -f "docker-compose.yml" build
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ vars.GOOGLE_APPLICATION_CREDENTIALS }}
+          GOOGLE_APPLICATION_CREDENTIALS: $HOME/credentials.json
           MAIL_ADDRESS: ${{ vars.MAIL_ADDRESS }}
           MAIL_PASS: ${{ vars.MAIL_PASS }}
 
@@ -44,4 +40,4 @@ jobs:
           password: ${{ vars.DOCKER_PASSWORD }}
 
       - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_PASSWORD }}/photosharex_api:latest
+        run: docker push ${{ vars.DOCKER_PASSWORD }}/photosharex_api:latest
