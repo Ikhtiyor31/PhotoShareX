@@ -17,6 +17,15 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: Print environment variables
+        run: |
+          echo "GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS:-Not Set}"
+          echo "MAIL_ADDRESS: ${MAIL_ADDRESS:-Not Set}"
+          echo "MAIL_PASS: ${MAIL_PASS:-Not Set}"
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ vars.GOOGLE_APPLICATION_CREDENTIALS }}
+          MAIL_ADDRESS: ${{ vars.MAIL_ADDRESS }}
+          MAIL_PASS: ${{ vars.MAIL_PASS }}
 
       - name: Start containers
         run: docker-compose -f "docker-compose.yml" build
