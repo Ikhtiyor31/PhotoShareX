@@ -7,10 +7,21 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: ${{ vars.Photosharex }}
+    environment:
+      name: Photosharex
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
       - name: Print environment variables
         run: |
+          echo "repository variable : $REPOSITORY_VAR"
           echo "GOOGLE_APPLICATION_CREDENTIALS: ${{ vars.GOOGLE_APPLICATION_CREDENTIALS }}"
           echo "MAIL_ADDRESS: ${{ vars.MAIL_ADDRESS }}"
           echo "MAIL_PASS: ${{ vars.MAIL_PASS }}"
