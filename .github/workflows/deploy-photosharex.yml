@@ -26,9 +26,13 @@ jobs:
         with:
           credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
 
+      - name: Copy credentials.json
+        run: echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > credentials.json
+
       - name: Build Docker Image
         run: docker-compose -f "docker-compose.yml" build
         env:
+          GOOGLE_APPLICATION_CREDENTIALS: credentials.json
           MAIL_ADDRESS: ${{ vars.MAIL_ADDRESS }}
           MAIL_PASS: ${{ vars.MAIL_PASS }}
 
