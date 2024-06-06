@@ -11,7 +11,7 @@ services:
     restart: always
     platform: linux/amd64
     environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=credentials.json
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/photosharex
       - SPRING_DATASOURCE_USERNAME=photosharexuser
       - SPRING_DATASOURCE_PASSWORD=photosharex1234
