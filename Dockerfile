@@ -9,6 +9,13 @@ ARG MAIL_ADDRESS
 ENV GOOGLE_APPLICATION_CREDENTIALS $GOOGLE_APPLICATION_CREDENTIALS
 ENV MAIL_ADDRESS $MAIL_ADDRESS
 
+# Print specific environment variables
+RUN echo "GOOGLE_APPLICATION_CREDENTIALS: $GOOGLE_APPLICATION_CREDENTIALS"
+RUN echo "MAIL_ADDRESS: $MAIL_ADDRESS"
+
+# Print all environment variables
+RUN printenv
+
 RUN ./gradlew --no-daemon build
 
 FROM amazoncorretto:${JAVA_VERSION} as platform

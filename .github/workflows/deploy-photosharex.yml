@@ -41,4 +41,4 @@ jobs:
           password: ${{ vars.DOCKER_PASSWORD }}
 
       - name: Push Docker image
-        run: docker push ${{ vars.DOCKER_PASSWORD }}/photosharex_api:latest
+        run: docker push ${{ vars.DOCKER_USERNAME }}/photosharex_api:latest
