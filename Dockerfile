@@ -8,7 +8,7 @@ ARG MAIL_ADDRESS
 ENV MAIL_ADDRESS $MAIL_ADDRESS
 
 # Copy the credentials file into the Docker image
-COPY /home/runner/work/PhotoShareX/PhotoShareX/credentials.json /app/credentials.json
+COPY credentials.json /app/credentials.json
 ENV GOOGLE_APPLICATION_CREDENTIALS /app/credentials.json
 
 RUN ./gradlew --no-daemon build

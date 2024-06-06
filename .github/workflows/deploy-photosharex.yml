@@ -27,7 +27,7 @@ jobs:
           credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
 
       - name: Create credentials.json
-        run: echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > /home/runner/work/PhotoShareX/PhotoShareX/credentials.json
+        run: echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > $GITHUB_WORKSPACE/credentials.json
 
 
       - name: Build Docker Image
