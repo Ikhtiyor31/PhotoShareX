@@ -3,9 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        GOOGLE_APPLICATION_CREDENTIALS: $GOOGLE_APPLICATION_CREDENTIALS
-        MAIL_ADDRESS: $MAIL_ADDRESS
     image: ikhtiyor31/photosharex_api
     container_name: photosharex
     restart: always
