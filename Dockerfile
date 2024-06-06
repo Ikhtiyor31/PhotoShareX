@@ -3,6 +3,8 @@ FROM amazoncorretto:${JAVA_VERSION} as Build
 
 COPY . /app
 WORKDIR /app
+ARG MAIL_ADDRESS
+ENV MAIL_ADDRESS $MAIL_ADDRESS
 
 RUN printenv
 
