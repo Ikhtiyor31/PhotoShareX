@@ -3,10 +3,14 @@ FROM amazoncorretto:${JAVA_VERSION} as Build
 
 COPY . /app
 WORKDIR /app
+
 ARG MAIL_ADDRESS
 ENV MAIL_ADDRESS $MAIL_ADDRESS
 
-RUN printenv
+# Securely fetch credentials from GitHub Actions secrets
+RUN echo ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }} > /secrets/credentials.json
+RUN chmod 600 /secrets/credentials.json  # Set appropriate permissions
+ENV GOOGLE_APPLICATION_CREDENTIALS=/secrets/credentials.json
 
 RUN ./gradlew --no-daemon build
 
