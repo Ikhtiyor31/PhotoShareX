@@ -25,8 +25,10 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
-      - name: Print environment variables
-        run: printenv
+
+      - name: Create credentials.json
+        run: echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > /home/runner/work/PhotoShareX/PhotoShareX/credentials.json
+
 
       - name: Build Docker Image
         run: docker-compose -f "docker-compose.yml" build

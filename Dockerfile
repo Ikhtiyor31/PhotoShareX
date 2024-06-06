@@ -7,18 +7,16 @@ WORKDIR /app
 ARG MAIL_ADDRESS
 ENV MAIL_ADDRESS $MAIL_ADDRESS
 
-# Securely fetch credentials from GitHub Actions secrets
-RUN echo ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }} > /secrets/credentials.json
-RUN chmod 600 /secrets/credentials.json  # Set appropriate permissions
-ENV GOOGLE_APPLICATION_CREDENTIALS=/secrets/credentials.json
+# Copy the credentials file into the Docker image
+COPY /home/runner/work/PhotoShareX/PhotoShareX/credentials.json /app/credentials.json
+ENV GOOGLE_APPLICATION_CREDENTIALS /app/credentials.json
 
 RUN ./gradlew --no-daemon build
 
 FROM amazoncorretto:${JAVA_VERSION} as platform
 ARG BUILD_JAR_PATH=build/libs/PhotoShareX-1.0.0.jar
 COPY --from=Build /app/${BUILD_JAR_PATH} .
-
-RUN printenv
+COPY --from=Build /app/credentials.json /app/credentials.json
 
 ENV PORT 8080
 EXPOSE $PORT
