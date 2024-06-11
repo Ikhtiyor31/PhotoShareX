@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: photosharex-container
-          image: asia-northeast3-docker.pkg.dev/${PROJECT_ID}/photosharexapi/photosharex_api
+          image: asia-northeast3-docker.pkg.dev/PROJECT_ID/photosharexapi/photosharex_api
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: local
