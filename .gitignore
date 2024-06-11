@@ -37,3 +37,4 @@ out/
 .vscode/
 /src/main/resources/gcp-photosharex-storage-key.json
 /src/test/resources/gcp-photosharex-storage-key.json
+credentials.json

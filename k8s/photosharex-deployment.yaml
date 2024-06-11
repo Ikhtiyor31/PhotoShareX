@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: photosharex
+  labels:
+    name: photosharex
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: photosharex
+  template:
+    metadata:
+      labels:
+        app: photosharex
+    spec:
+      containers:
+        - name: photosharex-container
+          image: asia-northeast3-docker.pkg.dev/${PROJECT_ID}/photosharexapi/photosharex_api
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: local
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /app/credentials.json
+            - name: MAIL_ADDRESS
+              value: ${MAIL_ADDRESS}
+            - name: MAIL_PASS
+              value: ${MAIL_PASS}
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres-service:5432/photosharex
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres_user
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres_password
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: update
+            - name: RABBITMQ_URL
+              value: rabbitmq-service
+          ports:
+            - containerPort: 8080
+          resources:  # Specify resource requests and limits
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+  strategy:  # Specify rolling update strategy
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: photosharex-service
+  labels:
+    name: photosharex-service
+spec:
+  selector:
+    app: photosharex  # Ensure this matches the deployment
+  type: LoadBalancer
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP

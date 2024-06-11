@@ -3,12 +3,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ikhtiyor31/photosharex_api
+    image: asia-northeast3-docker.pkg.dev/${PROJECT_ID}/photosharexapi/photosharex_api:latest
     container_name: photosharex
     restart: always
     platform: linux/amd64
     environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/photosharex
       - SPRING_DATASOURCE_USERNAME=photosharexuser
       - SPRING_DATASOURCE_PASSWORD=photosharex1234
@@ -19,11 +19,11 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
-      - rabbitmq
+      - postgres-service
+      - rabbitmq-service
     networks:
       - app_network
-  postgres:
+  postgres-service:
     image: postgres:latest
     restart: always
     ports:
@@ -37,7 +37,7 @@ services:
       - postgres:/data/postgres
     networks:
       - app_network
-  rabbitmq:
+  rabbitmq-service:
     image: rabbitmq:management
     restart: always
     environment:
