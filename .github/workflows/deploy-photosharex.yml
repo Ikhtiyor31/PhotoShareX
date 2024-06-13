@@ -53,7 +53,7 @@ jobs:
       # Build the Docker image
       - name: Build
         run: |-
-          docker-compose -f "docker-compose.yml" build
+          docker-compose -f "docker-compose.yml" build --build-arg GITHUB_SHA="$GITHUB_SHA"
         env:
           MAIL_ADDRESS: ${{ env.MAIL_ADDRESS }}
           MAIL_PASS: ${{ env.MAIL_PASS }}
@@ -62,11 +62,14 @@ jobs:
       # Push the Docker image to Google Container Registry
       - name: Publish
         run: |-
-          docker push $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:latest
+          docker push $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
 
+      - name: Update k8s/photosharex-deployment.yaml.yaml with GITHUB_SHA & PROJECT_ID
+        run: |-
+          sed -i 's/\${IMAGE_TAG}/'"$GITHUB_SHA"'/g' k8s/photosharex-deployment.yaml
+          sed -i -e 's/${PROJECT_ID}/'"$PROJECT_ID"'/g' k8s/photosharex-deployment.yaml
       - name: Deploy
         run: |-
-          sed -i -e 's/${PROJECT_ID}/'"$PROJECT_ID"'/g' k8s/photosharex-deployment.yaml
           kubectl apply -f k8s/postgres-config.yaml
           kubectl apply -f k8s/postgres-secret.yaml
           kubectl apply -f k8s/postgres.yaml
