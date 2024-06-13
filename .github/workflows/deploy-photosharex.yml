@@ -53,11 +53,12 @@ jobs:
       # Build the Docker image
       - name: Build
         run: |-
-          docker-compose -f "docker-compose.yml" build --build-arg GITHUB_SHA="$GITHUB_SHA"
+          docker-compose -f "docker-compose.yml" build
         env:
           MAIL_ADDRESS: ${{ env.MAIL_ADDRESS }}
           MAIL_PASS: ${{ env.MAIL_PASS }}
           PROJECT_ID: ${{ env.PROJECT_ID }}
+          GITHUB_SHA: ${{ github.sha }}
 
       # Push the Docker image to Google Container Registry
       - name: Publish
