@@ -16,16 +16,20 @@ spec:
     spec:
       containers:
         - name: photosharex-container
-          image: asia-northeast3-docker.pkg.dev/PROJECT_ID/photosharexapi/photosharex_api
+          image: asia-northeast3-docker.pkg.dev/${PROJECT_ID}/photosharexapi/photosharex_api:latest
           env:
+            - name: PROJECT_ID
+              value: "PROJECT_ID_PLACEHOLDER"
+            - name: IMAGE
+              value: "IMAGE_PLACEHOLDER"
             - name: SPRING_PROFILES_ACTIVE
               value: local
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /app/credentials.json
             - name: MAIL_ADDRESS
-              value: ${MAIL_ADDRESS}
+              value: MAIL_ADDRESS
             - name: MAIL_PASS
-              value: ${MAIL_PASS}
+              value: MAIL_PASS
             - name: SPRING_DATASOURCE_URL
               value: jdbc:postgresql://postgres-service:5432/photosharex
             - name: SPRING_DATASOURCE_USERNAME
@@ -51,6 +55,8 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "1000m"
+      imagePullSecrets:
+        - name: artifact-registry
   strategy:  # Specify rolling update strategy
     type: RollingUpdate
     rollingUpdate:
