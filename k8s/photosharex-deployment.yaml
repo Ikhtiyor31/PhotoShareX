@@ -17,6 +17,7 @@ spec:
       containers:
         - name: photosharex-container
           image: asia-northeast3-docker.pkg.dev/${PROJECT_ID}/photosharexapi/photosharex_api:latest
+          imagePullPolicy: Always
           env:
             - name: PROJECT_ID
               value: "PROJECT_ID_PLACEHOLDER"
