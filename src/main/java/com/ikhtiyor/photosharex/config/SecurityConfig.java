@@ -35,7 +35,8 @@ public class SecurityConfig {
                     "/api/v1/users/login",
                     "/api/v1/users/verify-email",
                     "/api/v1/users/refresh/**",
-                    "/api/v1/users/reset-password").permitAll()
+                    "/api/v1/users/reset-password",
+                    "/api/v1/users/test").permitAll()
                 .requestMatchers(HttpMethod.PATCH, "/api/v1/users/reset-password").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/users/**").hasRole("USER")
                 .requestMatchers(HttpMethod.POST, "/api/v1/photos").hasAnyRole("USER", "ADMIN")

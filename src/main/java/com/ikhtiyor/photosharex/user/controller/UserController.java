@@ -76,4 +76,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK)
             .body("password is updated!");
     }
+
+    @PostMapping(path = "/test")
+    public String getTestString() {
+        return "Test String Hello";
+    }
 }

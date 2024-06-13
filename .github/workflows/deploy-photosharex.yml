@@ -40,7 +40,6 @@ jobs:
       - name: Create credentials.json
         run: echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > $GITHUB_WORKSPACE/credentials.json
 
-
       - name: Docker configuration
         run: |-
           gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://$GAR_LOCATION-docker.pkg.dev
@@ -73,5 +72,6 @@ jobs:
           kubectl apply -f k8s/postgres.yaml
           kubectl apply -f k8s/rabbitmq.yaml
           kubectl apply -f k8s/photosharex-deployment.yaml
+          kubectl rollout status deployment/$DEPLOYMENT_NAME
           kubectl get pods
 
