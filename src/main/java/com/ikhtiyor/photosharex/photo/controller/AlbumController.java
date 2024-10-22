@@ -3,9 +3,9 @@ package com.ikhtiyor.photosharex.photo.controller;
 
 import com.ikhtiyor.photosharex.annotation.Authenticated;
 import com.ikhtiyor.photosharex.photo.dto.AlbumDTO;
+import com.ikhtiyor.photosharex.photo.dto.AlbumRequest;
 import com.ikhtiyor.photosharex.photo.dto.PhotoDTO;
 import com.ikhtiyor.photosharex.photo.dto.PhotoIdsRequest;
-import com.ikhtiyor.photosharex.photo.dto.AlbumRequest;
 import com.ikhtiyor.photosharex.photo.service.AlbumService;
 import com.ikhtiyor.photosharex.security.UserAdapter;
 import jakarta.validation.Valid;
@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -45,7 +44,7 @@ public class AlbumController {
         @RequestBody @Valid AlbumRequest albumRequest,
         @Authenticated UserAdapter userAdapter
     ) {
-        albumService.createAlbum(albumRequest, userAdapter.getUser());
+        albumService.createAlbum(albumRequest, userAdapter.user());
         return ResponseEntity.status(HttpStatus.CREATED)
             .body("Album created!");
     }
@@ -58,7 +57,7 @@ public class AlbumController {
         @Authenticated UserAdapter userAdapter
     ) {
         final var itemAddedMessage = albumService.addPhotosToAlbum(albumId, request,
-            userAdapter.getUser());
+            userAdapter.user());
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(itemAddedMessage);
     }
@@ -70,7 +69,7 @@ public class AlbumController {
         @PathVariable @Min(value = 1, message = "photoId field cannot be null or empty") Long photoId,
         @Authenticated UserAdapter userAdapter
     ) {
-        albumService.updateAlbumCoverImage(albumId, photoId, userAdapter.getUser());
+        albumService.updateAlbumCoverImage(albumId, photoId, userAdapter.user());
         return ResponseEntity.status(HttpStatus.OK)
             .body("Album cover updated!");
     }
@@ -80,7 +79,7 @@ public class AlbumController {
     public ResponseEntity<Page<AlbumDTO>> getMyAlbums(
         @PageableDefault(size = 20) Pageable pageable,
         @Authenticated UserAdapter userAdapter) {
-        Page<AlbumDTO> albumDTOS = albumService.getMyAlbums(pageable, userAdapter.getUser());
+        Page<AlbumDTO> albumDTOS = albumService.getMyAlbums(pageable, userAdapter.user());
         return ResponseEntity.status(HttpStatus.OK)
             .body(albumDTOS);
     }
@@ -95,7 +94,7 @@ public class AlbumController {
         Page<PhotoDTO> photoDTOS = albumService.getAlbumPhotos(
             pageable,
             albumId,
-            userAdapter.getUser()
+            userAdapter.user()
         );
         return ResponseEntity.status(HttpStatus.OK)
             .body(photoDTOS);
@@ -111,7 +110,7 @@ public class AlbumController {
         final var itemRemovedMessage = albumService.removePhotosFromAlbum(
             albumId,
             request,
-            userAdapter.getUser()
+            userAdapter.user()
         );
         return ResponseEntity.status(HttpStatus.OK)
             .body(itemRemovedMessage);
@@ -124,7 +123,7 @@ public class AlbumController {
         @RequestBody AlbumRequest albumRequest,
         @Authenticated UserAdapter userAdapter
     ) {
-        albumService.updateAlbum(albumId, albumRequest, userAdapter.getUser());
+        albumService.updateAlbum(albumId, albumRequest, userAdapter.user());
         return ResponseEntity.status(HttpStatus.OK)
             .body("Album updated!");
     }

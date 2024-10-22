@@ -4,10 +4,10 @@ package com.ikhtiyor.photosharex.user.controller;
 import com.ikhtiyor.photosharex.annotation.Authenticated;
 import com.ikhtiyor.photosharex.security.UserAdapter;
 import com.ikhtiyor.photosharex.user.dto.AccessTokenDTO;
+import com.ikhtiyor.photosharex.user.dto.PasswordResetRequest;
+import com.ikhtiyor.photosharex.user.dto.UserDTO;
 import com.ikhtiyor.photosharex.user.dto.UserLoginRequest;
 import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
-import com.ikhtiyor.photosharex.user.dto.UserDTO;
-import com.ikhtiyor.photosharex.user.dto.PasswordResetRequest;
 import com.ikhtiyor.photosharex.user.dto.VerificationCodeRequest;
 import com.ikhtiyor.photosharex.user.service.UserService;
 import jakarta.validation.Valid;
@@ -37,7 +37,7 @@ public class UserController {
         UserDTO userDTO = userService.createUser(request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body("User created with ID: " + userDTO.getId());
+            .body("User created with ID: " + userDTO.id());
     }
 
     @PostMapping(path = "/login")
@@ -53,14 +53,13 @@ public class UserController {
         return "Ok";
     }
 
-    @GetMapping(path = "/{userId}")
+    @GetMapping(path = "/me")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<UserDTO> getUserProfile(
-        @PathVariable Long userId,
         @Authenticated UserAdapter userAdapter
     ) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(userService.getUserProfile(userAdapter.getUser().getId()));
+            .body(userService.getUserProfile(userAdapter.user().getId()));
     }
 
     @PostMapping(path = "/refresh-token/{refreshToken}")

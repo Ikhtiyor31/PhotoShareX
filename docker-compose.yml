@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
       args:
         - GITHUB_SHA=${GITHUB_SHA}
-    image: asia-northeast3-docker.pkg.dev/${PROJECT_ID}/photosharexapi/photosharex_api:${GITHUB_SHA}
+    image: photosharex_api:${GITHUB_SHA}
     container_name: photosharex
     restart: always
     platform: linux/amd64

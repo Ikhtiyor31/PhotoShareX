@@ -6,8 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -15,25 +13,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Component
 public class AccessTokenFilter extends OncePerRequestFilter {
 
     private final RequestMatcher matcher =
         new AntPathRequestMatcher("/api/v1/**");
 
-    private AuthenticationManager manager;
+    private final AuthenticationManager manager;
 
     private final AuthenticationEntryPoint authenticationEntryPoint = (request, response, ex) -> {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().write(ex.getMessage());
     };
 
-    @Autowired
-    @Lazy
-    public void setAuthenticationManager(AuthenticationManager manager) {
+    public AccessTokenFilter(AuthenticationManager manager) {
         this.manager = manager;
     }
 

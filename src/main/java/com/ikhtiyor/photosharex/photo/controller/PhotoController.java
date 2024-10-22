@@ -47,7 +47,7 @@ public class PhotoController {
         @PageableDefault(size = 20) Pageable pageable,
         @Authenticated UserAdapter userAdapter
     ) {
-        Page<PhotoDTO> photoList = photoService.getPhotoList(pageable, userAdapter.getUser());
+        Page<PhotoDTO> photoList = photoService.getPhotoList(pageable, userAdapter.user());
         return ResponseEntity.status(HttpStatus.OK)
             .body(photoList);
 
@@ -59,7 +59,7 @@ public class PhotoController {
         @RequestBody @Valid PhotoRequest request,
         @Authenticated UserAdapter userAdapter
     ) {
-        photoService.createPhoto(request, userAdapter.getUser());
+        photoService.createPhoto(request, userAdapter.user());
         return ResponseEntity.status(HttpStatus.CREATED)
             .body("photo created!");
     }
@@ -70,7 +70,7 @@ public class PhotoController {
         @PathVariable @Min(value = 1, message = "photoId field must be an positive number") Long photoId,
         @Authenticated UserAdapter userAdapter
     ) {
-        PhotoDTO photoDTO = photoService.getPhoto(photoId, userAdapter.getUser());
+        PhotoDTO photoDTO = photoService.getPhoto(photoId, userAdapter.user());
         return ResponseEntity.status(HttpStatus.OK)
             .body(photoDTO);
     }
@@ -82,7 +82,7 @@ public class PhotoController {
         @PathVariable @Min(value = 1, message = "photoId field must be an positive number") Long photoId,
         @Authenticated UserAdapter userAdapter
     ) {
-        photoService.updatePhotoDetail(request, photoId, userAdapter.getUser());
+        photoService.updatePhotoDetail(request, photoId, userAdapter.user());
         return ResponseEntity.status(HttpStatus.OK)
             .body("photo updated!");
     }
@@ -94,7 +94,7 @@ public class PhotoController {
         @RequestParam("visibility_type") @NotNull(message = "visibility_type field cannot be null or empty") VisibilityType visibilityType,
         @Authenticated UserAdapter userAdapter
     ) {
-        photoService.changePhotoVisibility(photoId, visibilityType, userAdapter.getUser());
+        photoService.changePhotoVisibility(photoId, visibilityType, userAdapter.user());
         return ResponseEntity.status(HttpStatus.OK)
             .body("visibility type updated");
     }

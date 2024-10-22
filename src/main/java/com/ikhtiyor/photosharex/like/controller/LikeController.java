@@ -30,7 +30,7 @@ public class LikeController {
         @PathVariable @Min(value = 1, message = "photoId field must be an positive number") Long photoId,
         @Authenticated UserAdapter userAdapter
     ) {
-        likeService.createLike(albumId, photoId, userAdapter.getUser());
+        likeService.createLike(albumId, photoId, userAdapter.user());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

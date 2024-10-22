@@ -28,7 +28,7 @@ public class SharedAlbumController {
         @Authenticated UserAdapter userAdapter
     ) {
 
-        sharedAlbumService.createSharedAlbum(albumId, userAdapter.getUser());
+        sharedAlbumService.createSharedAlbum(albumId, userAdapter.user());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

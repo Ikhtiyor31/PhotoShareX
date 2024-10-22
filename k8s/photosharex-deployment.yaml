@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
         - name: photosharex-container
-          image: asia-northeast3-docker.pkg.dev/${PROJECT_ID}/photosharexapi/photosharex_api:${IMAGE_TAG}
-          imagePullPolicy: Always
+          image: photosharex_api:latest
+          imagePullPolicy: Never
           env:
             - name: PROJECT_ID
               value: "PROJECT_ID_PLACEHOLDER"
@@ -56,9 +56,6 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "1000m"
-      imagePullSecrets:
-        - name: artifact-registry
-
 ---
 apiVersion: v1
 kind: Service

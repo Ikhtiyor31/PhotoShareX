@@ -1,6 +1,18 @@
 package com.ikhtiyor.photosharex.user.controller;
 
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.ACCEPT;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ikhtiyor.photosharex.IntegrationTestSetup;
@@ -18,19 +30,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpHeaders.ACCEPT;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @WebMvcTest(UserController.class)
@@ -60,7 +59,7 @@ class UserControllerTest extends IntegrationTestSetup {
                 .header(ACCEPT, APPLICATION_JSON_VALUE)
                 .content(new ObjectMapper().writeValueAsString(request)))
             .andExpect(status().isCreated())
-            .andExpect(content().string("User created with ID: " + mockUserDTO.getId()));
+            .andExpect(content().string("User created with ID: " + mockUserDTO.id()));
     }
 
     @Test
@@ -100,18 +99,18 @@ class UserControllerTest extends IntegrationTestSetup {
     void getUserProfileTest() throws Exception {
         Long userId = 1L;
         UserDTO mockUserDTO = new UserDTO(userId, "ikhtiyor", "ikhtiyor@gmail.com");
-        var mockUser = new User(mockUserDTO.getName(), mockUserDTO.getEmail(), "password", "");
+        var mockUser = new User(mockUserDTO.name(), mockUserDTO.email(), "password", "");
         mockUser.setUserId(userId);
 
         when(userService.getUserProfile(anyLong())).thenReturn(mockUserDTO);
 
-        mockMvc.perform(get(USER_API_BASE_URL + "/{userId}", userId)
-                .with(user("user").roles("ADMI"))
+        mockMvc.perform(get(USER_API_BASE_URL + "/me")
+                .with(user("user").roles("ADMIN"))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("id").value(mockUserDTO.getId()))
-            .andExpect(jsonPath("name").value(mockUserDTO.getName()))
-            .andExpect(jsonPath("email").value(mockUserDTO.getEmail()));
+            .andExpect(jsonPath("id").value(mockUserDTO.id()))
+            .andExpect(jsonPath("name").value(mockUserDTO.name()))
+            .andExpect(jsonPath("email").value(mockUserDTO.email()));
     }
 
     @Test

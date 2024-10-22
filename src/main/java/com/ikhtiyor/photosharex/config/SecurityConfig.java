@@ -1,10 +1,13 @@
 package com.ikhtiyor.photosharex.config;
 
+import com.ikhtiyor.photosharex.security.AccessTokenAuthenticationProvider;
 import com.ikhtiyor.photosharex.security.AccessTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -18,14 +21,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final AccessTokenFilter accessTokenFilter;
+    private final AccessTokenAuthenticationProvider provider;
 
-    public SecurityConfig(AccessTokenFilter accessTokenFilter) {
-        this.accessTokenFilter = accessTokenFilter;
+    public SecurityConfig(AccessTokenAuthenticationProvider provider) {
+        this.provider = provider;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        AuthenticationManager manager = http.getSharedObject(AuthenticationManager.class);
         http
             .httpBasic(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
@@ -41,11 +45,19 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/v1/photos").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
             )
-            .addFilterBefore(accessTokenFilter, UsernamePasswordAuthenticationFilter.class)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-
+            .authenticationProvider(provider)
+            .addFilterBefore(
+                new AccessTokenFilter(manager), UsernamePasswordAuthenticationFilter.class
+            )
+            .sessionManagement(
+                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+        AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean

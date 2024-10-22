@@ -38,7 +38,7 @@ public class CommentController {
         @RequestParam @NotBlank(message = "Message must not be empty or blank") String message,
         @Authenticated UserAdapter userAdapter
     ) {
-        commentService.createComment(albumId, photoId, userAdapter.getUser(), message);
+        commentService.createComment(albumId, photoId, userAdapter.user(), message);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -52,7 +52,7 @@ public class CommentController {
         Page<CommentDTO> commentDTOS = commentService.getComments(
             photoId,
             pageable,
-            userAdapter.getUser()
+            userAdapter.user()
         );
         return ResponseEntity.status(HttpStatus.OK)
             .body(commentDTOS);
