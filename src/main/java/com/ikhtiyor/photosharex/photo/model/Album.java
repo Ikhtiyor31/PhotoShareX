@@ -3,6 +3,7 @@ package com.ikhtiyor.photosharex.photo.model;
 import com.ikhtiyor.photosharex.AuditableEntity;
 import com.ikhtiyor.photosharex.photo.dto.AlbumRequest;
 import com.ikhtiyor.photosharex.user.model.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,8 +12,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -49,6 +58,21 @@ public class Album extends AuditableEntity {
     @ColumnDefault("false")
     private Boolean isShared = false;
 
+    @ManyToMany
+    @JoinTable(
+        name = "album_shared_users",
+        joinColumns = @JoinColumn(name = "album_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private final Set<User> sharedUsers = new HashSet<>();
+
+    @OneToMany(
+        mappedBy = "album",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    private List<PhotoAlbum> photoAlbums = new ArrayList<>();
 
     public Album() {
     }
@@ -106,5 +130,44 @@ public class Album extends AuditableEntity {
 
     public Boolean isShared() {
         return isShared;
+    }
+
+    public Set<User> getSharedUsers() {
+        return sharedUsers;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Album{" +
+            "id=" + id +
+            ", user=" + user +
+            ", title='" + title + '\'' +
+            ", description='" + description + '\'' +
+            ", coverImageUrl='" + coverImageUrl + '\'' +
+            ", isShared=" + isShared +
+            '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Album album)) {
+            return false;
+        }
+        return Objects.equals(getId(), album.getId()) && Objects.equals(getUser(),
+            album.getUser()) && Objects.equals(getTitle(), album.getTitle())
+            && Objects.equals(getDescription(), album.getDescription())
+            && Objects.equals(getCoverImageUrl(), album.getCoverImageUrl())
+            && Objects.equals(isShared, album.isShared) && Objects.equals(
+            getSharedUsers(), album.getSharedUsers());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getUser(), getTitle(), getDescription(), getCoverImageUrl(),
+            isShared, getSharedUsers());
     }
 }

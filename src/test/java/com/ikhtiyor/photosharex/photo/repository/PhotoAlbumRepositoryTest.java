@@ -1,7 +1,8 @@
 package com.ikhtiyor.photosharex.photo.repository;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.ikhtiyor.photosharex.photo.dto.AlbumRequest;
 import com.ikhtiyor.photosharex.photo.dto.PhotoRequest;
@@ -88,11 +89,12 @@ class PhotoAlbumRepositoryTest {
             photoAlbums.add(photoAlbum);
         });
 
-        List<PhotoAlbum> savedPhotoAlbums = photoAlbumRepository.saveAll(photoAlbums);
+        photoAlbumRepository.saveAll(photoAlbums);
+        List<Photo> fetchPhotos = photoAlbumRepository.findPhotosByAlbumId(
+            savedUser.getAlbums().get(0).getId());
 
-        assertFalse(photos.isEmpty());
-        assertThat(photos.size()).isGreaterThan(2);
-        assertThat(savedPhotoAlbums.size()).isGreaterThan(2);
+        assertFalse(fetchPhotos.isEmpty());
+        assertThat(fetchPhotos.size()).isEqualTo(3);
     }
 
     @Test
@@ -231,15 +233,10 @@ class PhotoAlbumRepositoryTest {
         PhotoAlbum photoAlbum = new PhotoAlbum(photoAlbumId, photo, album);
         photoAlbumRepository.saveAndFlush(photoAlbum);
 
-        List<PhotoAlbum> photoAlbumsByAlbumIds = photoAlbumRepository
-            .findPhotoAlbumsByAlbum_Id(album.getId(), Pageable.unpaged()).toList();
-
-        List<PhotoAlbumId> photoAlbumIdList = new ArrayList<>();
-        photoAlbumsByAlbumIds.forEach(
-            photoAlbumIds -> photoAlbumIdList.add(photoAlbumIds.getPhotoAlbumId()));
 
         // When
-        photoAlbumRepository.deleteAllById(photoAlbumIdList);
+        photoAlbumRepository.deleteAllByAlbumId(album.getId());
+
         final var fetchPhotoAlbumListAfterDeleted = photoAlbumRepository
             .findPhotoAlbumsByAlbum_Id(album.getId(), Pageable.unpaged());
 

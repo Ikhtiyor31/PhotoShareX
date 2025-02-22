@@ -10,6 +10,7 @@ import com.ikhtiyor.photosharex.photo.service.AlbumService;
 import com.ikhtiyor.photosharex.security.UserAdapter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -86,18 +87,26 @@ public class AlbumController {
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{albumId}/photos")
-    public ResponseEntity<Page<PhotoDTO>> getAlbumPhotos(
+    public ResponseEntity<Page<PhotoDTO>> getPhotosByAlbum(
         @PathVariable @Min(value = 1, message = "albumId field cannot be null or empty") Long albumId,
         @PageableDefault(size = 20) Pageable pageable,
         @Authenticated UserAdapter userAdapter
     ) {
-        Page<PhotoDTO> photoDTOS = albumService.getAlbumPhotos(
+        Page<PhotoDTO> photoDTOS = albumService.getPhotosByAlbum(
             pageable,
             albumId,
             userAdapter.user()
         );
         return ResponseEntity.status(HttpStatus.OK)
             .body(photoDTOS);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/{albumId}")
+    public ResponseEntity<AlbumDTO> getAlbum(
+        @PathVariable @Min(value = 1, message = "albumId field cannot be null or empty") Long albumId
+    ) {
+        return ResponseEntity.ok(albumService.getAlbum(albumId));
     }
 
     @PreAuthorize("hasRole('USER')")
@@ -127,4 +136,44 @@ public class AlbumController {
         return ResponseEntity.status(HttpStatus.OK)
             .body("Album updated!");
     }
+
+
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping("/{albumId}/invite/{userId}")
+    public ResponseEntity<AlbumDTO> inviteUserToAlbum(
+        @PathVariable @Min(value = 1, message = "albumId field cannot be null or empty") Long albumId,
+        @PathVariable Long userId,
+        @Authenticated UserAdapter userAdapter
+    ) {
+        AlbumDTO albumDTO = albumService.inviteUser(albumId, userId);
+        return ResponseEntity.ok(albumDTO);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @DeleteMapping("/{albumId}")
+    public ResponseEntity<String> deleteAlbum(@PathVariable Long albumId,
+        @Authenticated UserAdapter userAdapter) {
+        albumService.deleteAlbum(albumId, userAdapter.user());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Album deleted successfully.");
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/shared")
+    public ResponseEntity<List<AlbumDTO>> listSharedAlbums(
+        @Authenticated UserAdapter userAdapter
+    ) {
+        return ResponseEntity.ok(albumService.listSharedAlbums(userAdapter.user()));
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @DeleteMapping("/{albumId}/shared-users/{userId}")
+    public ResponseEntity<Void> removeUserFromSharedAlbum(
+        @PathVariable @Min(value = 1, message = "albumId field cannot be null or empty") Long albumId,
+        @PathVariable Long userId,
+        @Authenticated UserAdapter userAdapter
+    ) {
+        albumService.revokeAccess(albumId, userId, userAdapter.user());
+        return ResponseEntity.noContent().build();
+    }
+
 }

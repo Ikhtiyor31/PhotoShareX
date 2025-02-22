@@ -5,7 +5,18 @@ import com.ikhtiyor.photosharex.AuditableEntity;
 import com.ikhtiyor.photosharex.photo.model.Album;
 import com.ikhtiyor.photosharex.photo.model.Photo;
 import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -15,7 +26,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(
     name = "user_email_unique", columnNames = "email"
 )})
-@SQLRestriction("deleted=false")
+@SQLRestriction("deleted = false")
 public class User extends AuditableEntity {
 
     @Id
@@ -129,6 +140,10 @@ public class User extends AuditableEntity {
         return albums;
     }
 
+    public void setUserId(Long userId) {
+        this.id = userId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -138,21 +153,12 @@ public class User extends AuditableEntity {
             return false;
         }
         User user = (User) o;
-        return enabled == user.enabled && Objects.equals(id, user.id)
-            && Objects.equals(name, user.name) && Objects.equals(email, user.email)
-            && Objects.equals(password, user.password) && Objects.equals(
-            profilePhoto, user.profilePhoto) && roleType == user.roleType && Objects.equals(
-            photos, user.photos) && Objects.equals(albums, user.albums);
-    }
-
-    public void setUserId(Long userId) {
-        this.id = userId;
+        return Objects.equals(id, user.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, email, password, profilePhoto, roleType, enabled, photos,
-            albums);
+        return Objects.hash(id);
     }
 
     @Override
@@ -165,8 +171,6 @@ public class User extends AuditableEntity {
             ", profilePhoto='" + profilePhoto + '\'' +
             ", roleType=" + roleType +
             ", enabled=" + enabled +
-            ", photos=" + photos +
-            ", albums=" + albums +
             '}';
     }
 }

@@ -132,6 +132,15 @@ public class UserServiceImpl implements UserService {
         user.updatePassword(encodePassword);
     }
 
+    @Override
+    public void deleteUser(Long userId) {
+        var user = userRepository.findById(userId)
+            .orElseThrow(
+                () -> new UsernameNotFoundException("User not found with userId: " + userId));
+
+        user.setDeleted();
+    }
+
     private User getUser(String email) {
         return userRepository
             .findUserByEmail(email)

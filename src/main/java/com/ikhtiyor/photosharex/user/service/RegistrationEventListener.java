@@ -2,7 +2,7 @@ package com.ikhtiyor.photosharex.user.service;
 
 
 import com.ikhtiyor.photosharex.notification.email.EmailDTO;
-import com.ikhtiyor.photosharex.rabbitmq.RabbitmqConfig;
+import com.ikhtiyor.photosharex.rabbitmq.RabbitMQConfig;
 import com.ikhtiyor.photosharex.user.dto.RegistrationCompleteEvent;
 import com.ikhtiyor.photosharex.user.model.VerificationCode;
 import com.ikhtiyor.photosharex.user.repository.VerificationCodeRepository;
@@ -36,8 +36,8 @@ public class RegistrationEventListener {
             "PhotoShareX Test",
             "Hi " + event.name() + ",\n" + "Please verify your email \n The verification code : " + verificationCode);
         rabbitTemplate.convertAndSend(
-            RabbitmqConfig.topicExchangeName,
-            RabbitmqConfig.emailRoutingKey,
+            RabbitMQConfig.EXCHANGE_NAME,
+            RabbitMQConfig.EMAIL_ROUTING_KEY,
             emailDto
         );
     }

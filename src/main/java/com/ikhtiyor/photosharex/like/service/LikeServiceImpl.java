@@ -35,7 +35,7 @@ public class LikeServiceImpl implements LikeService {
         Album album = albumRepository.findByUserAndId(user, albumId)
             .orElseThrow(() -> new ResourceNotFoundException("Album not found with ID:" + albumId));
 
-        if (!album.isShared()) {
+        if (!isPhotoInSharedAlbum(album, user)) {
             throw new IllegalArgumentException("SharedAlbum not found");
         }
 
@@ -49,5 +49,9 @@ public class LikeServiceImpl implements LikeService {
             () -> new ResourceNotFoundException("Like not found with ID: " + likeId));
 
         like.setDeleted();
+    }
+
+    public boolean isPhotoInSharedAlbum(Album album, User user) {
+        return album.isShared() || album.getSharedUsers().contains(user);
     }
 }

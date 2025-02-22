@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -116,5 +117,14 @@ public class PhotoController {
             .contentType(MediaType.TEXT_PLAIN)
             .header("Content-Disposition", "attachment; filename=" + file.getFilename())
             .body(file);
+    }
+
+    @DeleteMapping("/{photoId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<Void> deletePhoto(
+        @PathVariable @Min(value = 1, message = "photoId field must be an positive number") Long photoId
+    ) {
+        photoService.deletePhoto(photoId);
+        return ResponseEntity.noContent().build();
     }
 }

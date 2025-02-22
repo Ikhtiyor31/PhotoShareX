@@ -48,7 +48,6 @@ public class Photo extends AuditableEntity {
     )
     private User user;
 
-
     @Column(name = "image_url", nullable = false, columnDefinition = "TEXT")
     private String imageUrl;
 
@@ -64,6 +63,15 @@ public class Photo extends AuditableEntity {
 
     @Column(name = "location", nullable = false)
     private String location;
+
+    @OneToMany(
+        mappedBy = "photo",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    private List<PhotoAlbum> photoAlbums = new ArrayList<>();
+
 
     @OneToMany(
         mappedBy = "photo",
@@ -154,6 +162,10 @@ public class Photo extends AuditableEntity {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public List<Comment> getComments() {

@@ -5,6 +5,7 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageException;
 import com.ikhtiyor.photosharex.exception.GCPStorageException;
 import com.ikhtiyor.photosharex.exception.InvalidImageException;
 import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
@@ -59,7 +60,7 @@ public class PhotoServiceImpl implements PhotoService {
             pageable.getPageSize(),
             Direction.DESC, "createdAt");
 
-        return photoRepository.findByUser(user, createdAtPageable).map(PhotoDTO::from);
+        return photoRepository.findByUser(user, createdAtPageable).map(PhotoDTO::fromEntity);
     }
 
     @Override
@@ -80,7 +81,7 @@ public class PhotoServiceImpl implements PhotoService {
             throw new AccessDeniedException("No permission to access this photo");
         }
 
-        return PhotoDTO.from(photo);
+        return PhotoDTO.fromEntity(photo);
     }
 
     @Override
@@ -129,8 +130,9 @@ public class PhotoServiceImpl implements PhotoService {
             Blob blob = storage.create(blobInfo, outputStream.toByteArray());
             URL signedShortImageUrl = blob.signUrl(5, TimeUnit.MINUTES);
             return new UploadPhotoDTO(imageName, signedShortImageUrl.toString());
-        } catch (IOException e) {
-            throw new GCPStorageException("failed to upload image into GCP storage " + e);
+        } catch (IOException | GCPStorageException | StorageException e) {
+            throw new GCPStorageException(
+                "failed to upload image into GCP storage " + e.getCause());
         }
     }
 
@@ -147,4 +149,14 @@ public class PhotoServiceImpl implements PhotoService {
             throw new GCPStorageException("Failed to download image: " + e.getMessage());
         }
     }
+
+    @Override
+    public void deletePhoto(Long photoId) {
+        Photo photo = photoRepository.findById(photoId).orElseThrow(() ->
+            new ResourceNotFoundException("Photo not found wih Id: " + photoId)
+        );
+
+        photo.setDeleted();
+    }
+
 }

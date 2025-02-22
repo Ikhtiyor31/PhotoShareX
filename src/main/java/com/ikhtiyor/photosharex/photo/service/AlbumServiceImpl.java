@@ -2,9 +2,9 @@ package com.ikhtiyor.photosharex.photo.service;
 
 import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
 import com.ikhtiyor.photosharex.photo.dto.AlbumDTO;
+import com.ikhtiyor.photosharex.photo.dto.AlbumRequest;
 import com.ikhtiyor.photosharex.photo.dto.PhotoDTO;
 import com.ikhtiyor.photosharex.photo.dto.PhotoIdsRequest;
-import com.ikhtiyor.photosharex.photo.dto.AlbumRequest;
 import com.ikhtiyor.photosharex.photo.model.Album;
 import com.ikhtiyor.photosharex.photo.model.Photo;
 import com.ikhtiyor.photosharex.photo.model.PhotoAlbum;
@@ -13,10 +13,12 @@ import com.ikhtiyor.photosharex.photo.repository.AlbumRepository;
 import com.ikhtiyor.photosharex.photo.repository.PhotoAlbumRepository;
 import com.ikhtiyor.photosharex.photo.repository.PhotoRepository;
 import com.ikhtiyor.photosharex.user.model.User;
+import com.ikhtiyor.photosharex.user.repository.UserRepository;
 import com.ikhtiyor.photosharex.utils.StringUtil;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -32,12 +34,16 @@ public class AlbumServiceImpl implements AlbumService {
     private final AlbumRepository albumRepository;
     private final PhotoRepository photoRepository;
     private final PhotoAlbumRepository photoAlbumRepository;
+    private final UserRepository userRepository;
 
     public AlbumServiceImpl(AlbumRepository albumRepository, PhotoRepository photoRepository,
-        PhotoAlbumRepository photoAlbumRepository) {
+        PhotoAlbumRepository photoAlbumRepository,
+        UserRepository userRepository) {
         this.albumRepository = albumRepository;
         this.photoRepository = photoRepository;
         this.photoAlbumRepository = photoAlbumRepository;
+        Set<Integer> set = new HashSet<>();
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -48,7 +54,7 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     public String addPhotosToAlbum(Long albumId, PhotoIdsRequest request, User user) {
-        Album album = getAlbum(albumId);
+        Album album = getAlbumById(albumId);
         List<Photo> photos = getPhotos(request, user);
 
         List<PhotoAlbum> photoAlbums = new ArrayList<>();
@@ -90,12 +96,12 @@ public class AlbumServiceImpl implements AlbumService {
             Direction.DESC, "createdAt");
 
         return albumRepository.findByUser(user, createdAtPageable)
-            .map(AlbumDTO::from);
+            .map(AlbumDTO::fromEntity);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<PhotoDTO> getAlbumPhotos(Pageable pageable, Long albumId, User user) {
+    public Page<PhotoDTO> getPhotosByAlbum(Pageable pageable, Long albumId, User user) {
         Album album = getAlbumByUserAndId(albumId, user);
 
         PageRequest createdAtPageable = PageRequest.of(
@@ -107,12 +113,12 @@ public class AlbumServiceImpl implements AlbumService {
             album.getId(),
             createdAtPageable
         );
-        List<Photo> photos = photoAlbumPage.getContent().stream()
-            .map(PhotoAlbum::getPhoto)
-            .collect(Collectors.toList());
 
-        return new PageImpl<>(photos, pageable, photoAlbumPage.getTotalElements()).map(
-            PhotoDTO::from);
+        List<PhotoDTO> photos = photoAlbumPage.getContent().stream()
+            .map(photoAlbum -> PhotoDTO.fromEntity(photoAlbum.getPhoto()))
+            .toList();
+
+        return new PageImpl<>(photos, pageable, photoAlbumPage.getTotalElements());
     }
 
     @Override
@@ -133,12 +139,62 @@ public class AlbumServiceImpl implements AlbumService {
         album.setDescription(albumRequest.description());
     }
 
+    @Override
+    public AlbumDTO inviteUser(Long albumId, Long userId) {
+
+        Album album = albumRepository.findById(albumId).orElseThrow(() ->
+            new ResourceNotFoundException("Album not found with ID: " + albumId));
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+
+        album.getSharedUsers().add(user);
+
+        Album savedAlbum = albumRepository.save(album);
+
+        return AlbumDTO.fromEntity(savedAlbum);
+
+    }
+
     private Album getAlbumByUserAndId(Long albumId, User user) {
         return albumRepository.findByUserAndId(user, albumId).orElseThrow(
             () -> new ResourceNotFoundException("Album not found with ID: " + albumId));
     }
 
-    private Album getAlbum(Long albumId) {
+    @Transactional(readOnly = true)
+    public AlbumDTO getAlbum(Long albumId) {
+        Album album = getAlbumById(albumId);
+        return AlbumDTO.fromEntity(album);
+    }
+
+    @Override
+    public void deleteAlbum(Long albumId, User user) {
+        Album album = getAlbumById(albumId);
+        photoAlbumRepository.deleteAllByAlbumId(albumId);
+        album.setDeleted();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<AlbumDTO> listSharedAlbums(User user) {
+        List<Album> sharedAlbums = albumRepository.findSharedAlbumsByUserId(user.getId());
+        return sharedAlbums.stream().map(AlbumDTO::fromEntity).toList();
+    }
+
+    @Override
+    public void revokeAccess(Long albumId, Long userId, User owner) {
+        Album album = getAlbumByUserAndId(albumId, owner);
+        User userToRevoke = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+
+        if (!album.getSharedUsers().contains(userToRevoke)) {
+            throw new IllegalArgumentException("User does not have access to this album.");
+        }
+
+        album.getSharedUsers().remove(userToRevoke);
+        albumRepository.save(album);
+    }
+
+    private Album getAlbumById(Long albumId) {
         return albumRepository.findById(albumId).orElseThrow(
             () -> new ResourceNotFoundException("Album not found with ID: " + albumId));
     }
@@ -156,4 +212,5 @@ public class AlbumServiceImpl implements AlbumService {
     private void updateAlbumCoverImage(Album album, Photo photo) {
         album.updateCoverImage(photo.getImageUrl());
     }
+
 }

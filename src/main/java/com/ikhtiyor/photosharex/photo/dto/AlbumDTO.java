@@ -7,7 +7,8 @@ public record AlbumDTO(
     String description,
     String coverImageUrl
 ) {
-    public static AlbumDTO from(Album album) {
+
+    public static AlbumDTO fromEntity(Album album) {
         return new AlbumDTO(
             album.getTitle(),
             album.getDescription(),

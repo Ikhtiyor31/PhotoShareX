@@ -21,16 +21,16 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgres-service
-      - rabbitmq-service
+      - postgres
+      - rabbitmq
     networks:
       - app_network
-  postgres-service:
+  postgres:
     image: postgres:latest
     restart: always
     ports:
       - "5432:5432"
-    container_name: postgres
+    container_name: postgres-service
     environment:
       - POSTGRES_DB=photosharex
       - POSTGRES_USER=photosharexuser
@@ -39,9 +39,10 @@ services:
       - postgres:/data/postgres
     networks:
       - app_network
-  rabbitmq-service:
+  rabbitmq:
     image: rabbitmq:management
     restart: always
+    container_name: rabbitmq-service
     environment:
       - RABBITMQ_DEFAULT_USER=user
       - RABBITMQ_DEFAULT_PASS=password

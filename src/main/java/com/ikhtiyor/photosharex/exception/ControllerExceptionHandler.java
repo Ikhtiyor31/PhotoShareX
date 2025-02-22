@@ -17,6 +17,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
@@ -93,7 +94,8 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<CustomErrorMessage> handleConstraintViolationException(ConstraintViolationException ex) {
+    public ResponseEntity<CustomErrorMessage> handleConstraintViolationException(
+        ConstraintViolationException ex) {
         final var errorResponse = CustomErrorMessage.of(HttpStatus.BAD_REQUEST, ex.getMessage());
         LOGGER.error("Constraint violation: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
@@ -124,5 +126,20 @@ public class ControllerExceptionHandler {
         final var errorResponse = CustomErrorMessage.of(HttpStatus.BAD_REQUEST, ex.getMessage());
         LOGGER.error(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(UnauthorizedActionException.class)
+    public ResponseEntity<CustomErrorMessage> handleUnauthorizedActionException(
+        UnauthorizedActionException ex) {
+        final var customErrorMessage = CustomErrorMessage.of(HttpStatus.FORBIDDEN, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(customErrorMessage);
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<CustomErrorMessage> handleNoHandlerFoundException(
+        NoHandlerFoundException ex) {
+        final var errorMessage = CustomErrorMessage.of(HttpStatus.NOT_FOUND,
+            ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
     }
 }

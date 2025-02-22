@@ -30,6 +30,12 @@ class PhotoRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AlbumRepository albumRepository;
+
+    @Autowired
+    private PhotoAlbumRepository photoAlbumRepository;
+
     @BeforeEach
     void setUp() {
         photoRepository.deleteAll();

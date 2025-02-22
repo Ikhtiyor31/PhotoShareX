@@ -4,12 +4,12 @@ import com.ikhtiyor.photosharex.comment.dto.CommentDTO;
 import com.ikhtiyor.photosharex.comment.model.Comment;
 import com.ikhtiyor.photosharex.comment.repository.CommentRepository;
 import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
+import com.ikhtiyor.photosharex.exception.UnauthorizedActionException;
 import com.ikhtiyor.photosharex.photo.model.Album;
 import com.ikhtiyor.photosharex.photo.model.Photo;
 import com.ikhtiyor.photosharex.photo.repository.AlbumRepository;
 import com.ikhtiyor.photosharex.photo.repository.PhotoRepository;
 import com.ikhtiyor.photosharex.user.model.User;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,8 +40,9 @@ public class CommentServiceImpl implements CommentService {
         Album album = albumRepository.findByUserAndId(user, albumId)
             .orElseThrow(() -> new ResourceNotFoundException("Album not found with ID:" + albumId));
 
-        if (!album.isShared()) {
-            throw new IllegalArgumentException("SharedAlbum not found");
+        if (isPhotoInSharedAlbum(album, user)) {
+            throw new UnauthorizedActionException(
+                "You can only comment on photos in shared albums");
         }
 
         Comment comment = Comment.createOf(photo, user, message);
@@ -52,7 +53,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Page<CommentDTO> getComments(Long photoId, Pageable pageable, User user) {
         return commentRepository.findByPhoto_IdAndUser(photoId, user, pageable)
-            .map(CommentDTO::from);
+            .map(CommentDTO::fromEntity);
     }
 
     @Override
@@ -61,5 +62,9 @@ public class CommentServiceImpl implements CommentService {
             () -> new ResourceNotFoundException("Comment not found with ID: " + commentId));
 
         comment.setDeleted();
+    }
+
+    public boolean isPhotoInSharedAlbum(Album album, User user) {
+        return album.isShared() || album.getSharedUsers().contains(user);
     }
 }
