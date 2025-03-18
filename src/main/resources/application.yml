@@ -5,7 +5,7 @@ spring:
     name: photosharex
   datasource:
     password: photosharex1234
-    url: jdbc:postgresql://localhost:5432/photosharex
+    url: jdbc:postgresql://postgres-service:5432/photosharex
     username: photosharexuser
   jpa:
     hibernate:
@@ -27,7 +27,7 @@ spring:
           starttls:
             enable: true
   rabbitmq:
-    host: localhost
+    host: rabbitmq-service
     port: 5672
     username: user
     password: password
