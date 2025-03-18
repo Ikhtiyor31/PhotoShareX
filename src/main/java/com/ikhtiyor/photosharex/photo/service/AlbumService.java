@@ -25,7 +25,7 @@ public interface AlbumService {
 
     void updateAlbum(Long albumId, AlbumRequest albumRequest, User user);
 
-    AlbumDTO inviteUser(Long albumId, Long userId);
+    AlbumDTO inviteUser(Long albumId, Long userId, User user);
 
     AlbumDTO getAlbum(Long albumId);
 

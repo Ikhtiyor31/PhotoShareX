@@ -22,15 +22,16 @@ public class EmailService {
         this.javaMailSender = javaMailSender;
     }
 
-    public void sendVerificationEmail(EmailDTO emailDto) {
+    public void sendVerificationEmail(EmailNotificationEvent emailNotificationEvent) {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             mimeMessage.setFrom(sender);
-            mimeMessage.addRecipient(RecipientType.TO, new InternetAddress(emailDto.to()));
-            mimeMessage.setSubject(emailDto.title());
-            mimeMessage.setText(emailDto.message());
+            mimeMessage.addRecipient(RecipientType.TO,
+                new InternetAddress(emailNotificationEvent.to()));
+            mimeMessage.setSubject(emailNotificationEvent.title());
+            mimeMessage.setText(emailNotificationEvent.message());
             javaMailSender.send(mimeMessage);
-            LOGGER.info("Verification email successfully sent to {}", emailDto.to());
+            LOGGER.info("Verification email successfully sent to {}", emailNotificationEvent.to());
         } catch (Exception e) {
             throw new EmailSendingFailException("Error sending verification email", e);
         }

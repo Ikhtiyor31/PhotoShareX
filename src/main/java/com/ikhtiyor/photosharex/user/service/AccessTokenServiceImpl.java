@@ -1,7 +1,11 @@
 package com.ikhtiyor.photosharex.user.service;
 
 import com.ikhtiyor.photosharex.user.dto.Token;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -10,8 +14,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class AccessTokenServiceImpl implements AccessTokenService {
 
     private static final String jwtSecretKey = "asdLHUiafa3hoiuhohviuIIOIyiasdfa";

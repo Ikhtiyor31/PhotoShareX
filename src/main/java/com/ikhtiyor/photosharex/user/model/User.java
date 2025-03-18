@@ -68,6 +68,14 @@ public class User extends AuditableEntity {
     )
     private List<Album> albums = new ArrayList<>();
 
+    @OneToMany(
+        mappedBy = "user",
+        cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+        orphanRemoval = true,
+        fetch = FetchType.EAGER
+    )
+    private List<AppDevice> appDevices = new ArrayList<>();
+
     public User() {
     }
 
@@ -138,6 +146,10 @@ public class User extends AuditableEntity {
 
     public List<Album> getAlbums() {
         return albums;
+    }
+
+    public List<AppDevice> getAppDevices() {
+        return appDevices;
     }
 
     public void setUserId(Long userId) {

@@ -1,6 +1,7 @@
 package com.ikhtiyor.photosharex.comment.service;
 
 import com.ikhtiyor.photosharex.comment.dto.CommentDTO;
+import com.ikhtiyor.photosharex.comment.dto.CommentNotificationEvent;
 import com.ikhtiyor.photosharex.comment.model.Comment;
 import com.ikhtiyor.photosharex.comment.repository.CommentRepository;
 import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
@@ -9,7 +10,10 @@ import com.ikhtiyor.photosharex.photo.model.Album;
 import com.ikhtiyor.photosharex.photo.model.Photo;
 import com.ikhtiyor.photosharex.photo.repository.AlbumRepository;
 import com.ikhtiyor.photosharex.photo.repository.PhotoRepository;
+import com.ikhtiyor.photosharex.user.model.AppDevice;
 import com.ikhtiyor.photosharex.user.model.User;
+import java.util.List;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,14 +26,16 @@ public class CommentServiceImpl implements CommentService {
     private final AlbumRepository albumRepository;
     private final PhotoRepository photoRepository;
     private final CommentRepository commentRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public CommentServiceImpl(AlbumRepository albumRepository,
         PhotoRepository photoRepository,
-        CommentRepository commentRepository
+        CommentRepository commentRepository, ApplicationEventPublisher eventPublisher
     ) {
         this.albumRepository = albumRepository;
         this.photoRepository = photoRepository;
         this.commentRepository = commentRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -40,14 +46,31 @@ public class CommentServiceImpl implements CommentService {
         Album album = albumRepository.findByUserAndId(user, albumId)
             .orElseThrow(() -> new ResourceNotFoundException("Album not found with ID:" + albumId));
 
-        if (isPhotoInSharedAlbum(album, user)) {
+        if (!isAlbumShared(album, user)) {
             throw new UnauthorizedActionException(
                 "You can only comment on photos in shared albums");
         }
 
         Comment comment = Comment.createOf(photo, user, message);
         commentRepository.save(comment);
+
+        List<String> deviceFcmTokens = album.getSharedUsers().stream()
+            .flatMap(sharedUser -> sharedUser.getAppDevices().stream().map(
+                AppDevice::getDeviceFcmToken))
+            .toList();
+        var commentNotificationEvent = new CommentNotificationEvent(
+            "New Comment from " + user.getName(),
+            message,
+            deviceFcmTokens
+        );
+
+        batchSendNotifications(commentNotificationEvent);
     }
+
+    public void batchSendNotifications(CommentNotificationEvent events) {
+        eventPublisher.publishEvent(events);
+    }
+
 
     @Transactional(readOnly = true)
     @Override
@@ -58,13 +81,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void deleteComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(
-            () -> new ResourceNotFoundException("Comment not found with ID: " + commentId));
+        Comment comment = commentRepository
+            .findById(commentId).orElseThrow(
+                () -> new ResourceNotFoundException("Comment not found with ID: " + commentId));
 
         comment.setDeleted();
     }
 
-    public boolean isPhotoInSharedAlbum(Album album, User user) {
-        return album.isShared() || album.getSharedUsers().contains(user);
+    public boolean isAlbumShared(Album album, User user) {
+        return album.getUser().equals(user) && !album.getSharedUsers().isEmpty();
     }
 }

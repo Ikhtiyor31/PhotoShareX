@@ -1,6 +1,8 @@
 package com.ikhtiyor.photosharex.photo.service;
 
+import com.ikhtiyor.photosharex.exception.DuplicateAlbumShareException;
 import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
+import com.ikhtiyor.photosharex.exception.UnauthorizedActionException;
 import com.ikhtiyor.photosharex.photo.dto.AlbumDTO;
 import com.ikhtiyor.photosharex.photo.dto.AlbumRequest;
 import com.ikhtiyor.photosharex.photo.dto.PhotoDTO;
@@ -16,9 +18,7 @@ import com.ikhtiyor.photosharex.user.model.User;
 import com.ikhtiyor.photosharex.user.repository.UserRepository;
 import com.ikhtiyor.photosharex.utils.StringUtil;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -42,7 +42,6 @@ public class AlbumServiceImpl implements AlbumService {
         this.albumRepository = albumRepository;
         this.photoRepository = photoRepository;
         this.photoAlbumRepository = photoAlbumRepository;
-        Set<Integer> set = new HashSet<>();
         this.userRepository = userRepository;
     }
 
@@ -140,15 +139,23 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public AlbumDTO inviteUser(Long albumId, Long userId) {
+    public AlbumDTO inviteUser(Long albumId, Long userId, User loggedInUser) {
 
         Album album = albumRepository.findById(albumId).orElseThrow(() ->
             new ResourceNotFoundException("Album not found with ID: " + albumId));
+
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
 
-        album.getSharedUsers().add(user);
+        if (user.equals(loggedInUser)) {
+            throw new UnauthorizedActionException("User cannot invite himself to shared Album");
+        }
 
+        if (album.getSharedUsers().contains(user)) {
+            throw new DuplicateAlbumShareException("User is already invited to this album.");
+        }
+
+        album.getSharedUsers().add(user);
         Album savedAlbum = albumRepository.save(album);
 
         return AlbumDTO.fromEntity(savedAlbum);

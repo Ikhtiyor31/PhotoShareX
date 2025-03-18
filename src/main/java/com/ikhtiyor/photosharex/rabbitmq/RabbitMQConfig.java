@@ -15,7 +15,7 @@ import org.springframework.retry.interceptor.RetryOperationsInterceptor;
 @Configuration
 public class RabbitMQConfig {
 
-    public static final String EXCHANGE_NAME = "notification-exchange";
+    public static final String NOTIFICATION_EXCHANGE_NAME = "notification-exchange";
     public static final String EMAIL_ROUTING_KEY = "email.routing-key";
     public static final String FCM_ROUTING_KEY = "fcm.routing-key";
     public static final String EMAIL_QUEUE = "email-queue";
@@ -33,7 +33,7 @@ public class RabbitMQConfig {
 
     @Bean
     public TopicExchange topicExchange() {
-        return new TopicExchange(EXCHANGE_NAME, true, false);
+        return new TopicExchange(NOTIFICATION_EXCHANGE_NAME, true, false);
     }
 
     @Bean

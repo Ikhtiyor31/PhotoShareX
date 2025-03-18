@@ -18,7 +18,7 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
 
     Page<Album> findByUser(User user, Pageable pageable);
 
-    @Query("SELECT a FROM Album a JOIN a.sharedUsers su WHERE su.id = :userId")
+    @Query("SELECT a FROM Album a JOIN a.sharedUsers su WHERE a.id = :userId")
     List<Album> findSharedAlbumsByUserId(@Param("userId") Long userId);
 
 }

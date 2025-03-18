@@ -39,7 +39,7 @@ dependencies {
     implementation 'ch.qos.logback:logback-classic:1.4.12'
 
     // FileUtils
-    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.18.0'
     implementation 'net.coobird:thumbnailator:0.4.1'
 
     // H2 DB
@@ -57,7 +57,12 @@ dependencies {
     // Spring Modulith Events API artifact
     implementation 'org.springframework.modulith:spring-modulith-events-api:1.1.4'
 
+    // firebase
+    implementation 'com.google.firebase:firebase-admin:9.4.3'
 
+    // retry mechanism
+    implementation 'org.springframework.retry:spring-retry'
+    implementation 'org.springframework:spring-aspects'
 }
 
 dependencyManagement {

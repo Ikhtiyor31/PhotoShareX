@@ -145,7 +145,7 @@ public class AlbumController {
         @PathVariable Long userId,
         @Authenticated UserAdapter userAdapter
     ) {
-        AlbumDTO albumDTO = albumService.inviteUser(albumId, userId);
+        AlbumDTO albumDTO = albumService.inviteUser(albumId, userId, userAdapter.user());
         return ResponseEntity.ok(albumDTO);
     }
 

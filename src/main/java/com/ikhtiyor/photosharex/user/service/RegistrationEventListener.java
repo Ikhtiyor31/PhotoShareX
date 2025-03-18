@@ -1,7 +1,7 @@
 package com.ikhtiyor.photosharex.user.service;
 
 
-import com.ikhtiyor.photosharex.notification.email.EmailDTO;
+import com.ikhtiyor.photosharex.notification.email.EmailNotificationEvent;
 import com.ikhtiyor.photosharex.rabbitmq.RabbitMQConfig;
 import com.ikhtiyor.photosharex.user.dto.RegistrationCompleteEvent;
 import com.ikhtiyor.photosharex.user.model.VerificationCode;
@@ -31,12 +31,12 @@ public class RegistrationEventListener {
     public void onSendVerificationEmail(RegistrationCompleteEvent event) {
         String verificationCode = verificationCodeGenerator.generate(4);
         saveVerificationCode(event.email(), verificationCode);
-        final var emailDto = new EmailDTO(
+        final var emailDto = new EmailNotificationEvent(
             event.email(),
             "PhotoShareX Test",
             "Hi " + event.name() + ",\n" + "Please verify your email \n The verification code : " + verificationCode);
         rabbitTemplate.convertAndSend(
-            RabbitMQConfig.EXCHANGE_NAME,
+            RabbitMQConfig.NOTIFICATION_EXCHANGE_NAME,
             RabbitMQConfig.EMAIL_ROUTING_KEY,
             emailDto
         );

@@ -41,7 +41,12 @@ public class SecurityConfig {
                     "/api/v1/users/refresh/**").permitAll()
                 .requestMatchers(HttpMethod.PATCH, "/api/v1/users/reset-password").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/users/**").hasRole("USER")
-                .requestMatchers(HttpMethod.POST, "/api/v1/photos").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v1/photos",
+                    "/api/v1/comments/**",
+                    "/api/v1/albums/**",
+                    "/api/v1/likes/**",
+                    "/api/v1/devices")
+                .hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
             )
             .authenticationProvider(provider)

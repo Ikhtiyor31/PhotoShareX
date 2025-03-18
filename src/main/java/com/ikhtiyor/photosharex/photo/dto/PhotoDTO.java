@@ -15,7 +15,7 @@ public record PhotoDTO(
     LocalDateTime createdAt
 ) {
 
-    public static PhotoDTO from(Photo photo) {
+    public static PhotoDTO fromEntity(Photo photo) {
         return new PhotoDTO(
             photo.getId(),
             photo.getImageUrl(),

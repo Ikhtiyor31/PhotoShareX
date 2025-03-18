@@ -1,6 +1,6 @@
 package com.ikhtiyor.photosharex.notification.email;
 
-public record EmailDTO(
+public record EmailNotificationEvent(
     String to,
     String title,
     String message
@@ -8,7 +8,7 @@ public record EmailDTO(
 
     @Override
     public String toString() {
-        return "EmailDTO{" +
+        return "EmailNotificationEvent{" +
             "to='" + to + '\'' +
             ", title='" + title + '\'' +
             ", message='" + message + '\'' +
