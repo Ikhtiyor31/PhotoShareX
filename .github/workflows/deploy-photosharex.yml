@@ -7,8 +7,8 @@ env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GAR_LOCATION: asia-northeast3
   GKE_CLUSTER: autopilot-cluster-1
-  GKE_ZONE: asia-south1
-  DEPLOYMENT_NAME: photosharex
+  GKE_ZONE: asia-northeast3
+  DEPLOYMENT_NAME: p  hotosharex
   REPOSITORY: photosharexapi
   IMAGE: photosharex_api
   IMAGE_TAG: latest
