@@ -8,7 +8,7 @@ env:
   GAR_LOCATION: asia-northeast3
   GKE_CLUSTER: autopilot-cluster-1
   GKE_ZONE: asia-northeast3
-  DEPLOYMENT_NAME: p  hotosharex
+  DEPLOYMENT_NAME: photosharex
   REPOSITORY: photosharexapi
   IMAGE: photosharex_api
   IMAGE_TAG: latest
