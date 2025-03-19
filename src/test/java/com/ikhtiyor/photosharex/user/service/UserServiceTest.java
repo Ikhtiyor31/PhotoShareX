@@ -85,9 +85,9 @@ class UserServiceTest {
 
         // Then
         assertNotNull(userDto);
-        assertFalse(userDto.getEmail().isEmpty());
-        assertThat(userDto.getEmail()).isEqualTo(request.email());
-        assertThat(userDto.getName()).isEqualTo(request.name());
+        assertFalse(userDto.email().isEmpty());
+        assertThat(userDto.email()).isEqualTo(request.email());
+        assertThat(userDto.name()).isEqualTo(request.name());
     }
 
     @Test
@@ -343,9 +343,9 @@ class UserServiceTest {
 
         // Then
         assertNotNull(userDTO);
-        assertThat(1L).isEqualTo(userDTO.getId());
-        assertThat(request.name()).isEqualTo(userDTO.getName());
-        assertThat(request.email()).isEqualTo(userDTO.getEmail());
+        assertThat(1L).isEqualTo(userDTO.id());
+        assertThat(request.name()).isEqualTo(userDTO.name());
+        assertThat(request.email()).isEqualTo(userDTO.email());
     }
 
 

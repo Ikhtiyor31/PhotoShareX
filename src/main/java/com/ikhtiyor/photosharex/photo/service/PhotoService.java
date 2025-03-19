@@ -26,4 +26,7 @@ public interface PhotoService {
     void updatePhotoDetail(PhotoUpdateRequest request, Long photoId, User user);
 
     void changePhotoVisibility(Long photoId, VisibilityType visibilityType, User user);
+
+    void deletePhoto(Long photoId);
+
 }

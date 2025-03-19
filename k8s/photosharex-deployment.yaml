@@ -49,15 +49,20 @@ spec:
               value: rabbitmq-service
           ports:
             - containerPort: 8080
-          resources:
+          resources:  # Specify resource requests and limits
             requests:
               memory: "512Mi"
               cpu: "500m"
             limits:
-              memory: "2Gi"
-              cpu: "2000m"
+              memory: "1Gi"
+              cpu: "1000m"
       imagePullSecrets:
         - name: artifact-registry
+  strategy:  # Specify rolling update strategy
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
 
 ---
 apiVersion: v1

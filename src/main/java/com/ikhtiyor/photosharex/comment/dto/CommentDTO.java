@@ -8,7 +8,8 @@ public record CommentDTO(
     String message,
     LocalDateTime createdAt
 ) {
-    public static CommentDTO from(Comment comment) {
+
+    public static CommentDTO fromEntity(Comment comment) {
         return new CommentDTO(
             comment.getId(),
             comment.getMessage(),

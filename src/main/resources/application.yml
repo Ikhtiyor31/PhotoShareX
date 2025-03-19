@@ -35,3 +35,4 @@ gcp:
   cloud:
     bucket: photosharex-bucket
     bucket-directory: image/
+  firebase-file: classpath:gcp-photosharex-storage-key.json

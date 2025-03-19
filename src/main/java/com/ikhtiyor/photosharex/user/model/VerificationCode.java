@@ -53,13 +53,14 @@ public class VerificationCode extends AuditableEntity {
         return email;
     }
 
+    public LocalDateTime getVerificationTime() {
+        return verificationTime;
+    }
+
     public void setVerificationTime(LocalDateTime verificationTime) {
         this.verificationTime = verificationTime;
     }
 
-    public LocalDateTime getVerificationTime() {
-        return verificationTime;
-    }
     public Boolean isExpired(){
         return expirationTime.isBefore(LocalDateTime.now());
     }

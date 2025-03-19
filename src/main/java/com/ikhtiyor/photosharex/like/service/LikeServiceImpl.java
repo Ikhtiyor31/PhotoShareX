@@ -2,13 +2,17 @@ package com.ikhtiyor.photosharex.like.service;
 
 
 import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
+import com.ikhtiyor.photosharex.like.dto.LikeNotificationEvent;
 import com.ikhtiyor.photosharex.like.model.Like;
 import com.ikhtiyor.photosharex.like.repository.LikeRepository;
 import com.ikhtiyor.photosharex.photo.model.Album;
 import com.ikhtiyor.photosharex.photo.model.Photo;
 import com.ikhtiyor.photosharex.photo.repository.AlbumRepository;
 import com.ikhtiyor.photosharex.photo.repository.PhotoRepository;
+import com.ikhtiyor.photosharex.user.model.AppDevice;
 import com.ikhtiyor.photosharex.user.model.User;
+import java.util.List;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +23,14 @@ public class LikeServiceImpl implements LikeService {
     private final PhotoRepository photoRepository;
     private final AlbumRepository albumRepository;
     private final LikeRepository likeRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public LikeServiceImpl(PhotoRepository photoRepository, AlbumRepository albumRepository,
-        LikeRepository likeRepository) {
+        LikeRepository likeRepository, ApplicationEventPublisher eventPublisher) {
         this.photoRepository = photoRepository;
         this.albumRepository = albumRepository;
         this.likeRepository = likeRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -35,12 +41,28 @@ public class LikeServiceImpl implements LikeService {
         Album album = albumRepository.findByUserAndId(user, albumId)
             .orElseThrow(() -> new ResourceNotFoundException("Album not found with ID:" + albumId));
 
-        if (!album.isShared()) {
+        if (!isAlbumShared(album, user)) {
             throw new IllegalArgumentException("SharedAlbum not found");
         }
 
         Like like = Like.createOf(photo, user);
         likeRepository.save(like);
+
+        List<String> deviceFcmTokens = album.getSharedUsers().stream()
+            .flatMap(sharedUser -> sharedUser.getAppDevices().stream().map(
+                AppDevice::getDeviceFcmToken))
+            .toList();
+        var likeNotificationEvent = new LikeNotificationEvent(
+            "New Like from " + user.getName(),
+            "",
+            deviceFcmTokens
+        );
+
+        batchSendNotifications(likeNotificationEvent);
+    }
+
+    public void batchSendNotifications(LikeNotificationEvent events) {
+        eventPublisher.publishEvent(events);
     }
 
     @Override
@@ -49,5 +71,9 @@ public class LikeServiceImpl implements LikeService {
             () -> new ResourceNotFoundException("Like not found with ID: " + likeId));
 
         like.setDeleted();
+    }
+
+    public boolean isAlbumShared(Album album, User user) {
+        return album.getUser().equals(user) && !album.getSharedUsers().isEmpty();
     }
 }

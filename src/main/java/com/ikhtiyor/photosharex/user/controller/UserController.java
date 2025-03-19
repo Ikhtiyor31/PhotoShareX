@@ -4,16 +4,17 @@ package com.ikhtiyor.photosharex.user.controller;
 import com.ikhtiyor.photosharex.annotation.Authenticated;
 import com.ikhtiyor.photosharex.security.UserAdapter;
 import com.ikhtiyor.photosharex.user.dto.AccessTokenDTO;
+import com.ikhtiyor.photosharex.user.dto.PasswordResetRequest;
+import com.ikhtiyor.photosharex.user.dto.UserDTO;
 import com.ikhtiyor.photosharex.user.dto.UserLoginRequest;
 import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
-import com.ikhtiyor.photosharex.user.dto.UserDTO;
-import com.ikhtiyor.photosharex.user.dto.PasswordResetRequest;
 import com.ikhtiyor.photosharex.user.dto.VerificationCodeRequest;
 import com.ikhtiyor.photosharex.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +38,7 @@ public class UserController {
         UserDTO userDTO = userService.createUser(request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body("User created with ID: " + userDTO.getId());
+            .body("User created with ID: " + userDTO.id());
     }
 
     @PostMapping(path = "/login")
@@ -53,14 +54,13 @@ public class UserController {
         return "Ok";
     }
 
-    @GetMapping(path = "/{userId}")
+    @GetMapping(path = "/me")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<UserDTO> getUserProfile(
-        @PathVariable Long userId,
         @Authenticated UserAdapter userAdapter
     ) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(userService.getUserProfile(userAdapter.getUser().getId()));
+            .body(userService.getUserProfile(userAdapter.user().getId()));
     }
 
     @PostMapping(path = "/refresh-token/{refreshToken}")
@@ -75,5 +75,12 @@ public class UserController {
         userService.resetPassword(request);
         return ResponseEntity.status(HttpStatus.OK)
             .body("password is updated!");
+    }
+
+    @DeleteMapping("/me")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<String> deleteAccount(@Authenticated UserAdapter userAdapter) {
+        userService.deleteUser(userAdapter.user().getId());
+        return ResponseEntity.ok("Account deleted successfully!");
     }
 }

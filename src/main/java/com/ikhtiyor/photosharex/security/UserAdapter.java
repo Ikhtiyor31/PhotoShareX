@@ -1,22 +1,17 @@
 package com.ikhtiyor.photosharex.security;
 
 import com.ikhtiyor.photosharex.user.model.User;
+import java.util.Collection;
+import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
-public class UserAdapter implements UserDetails {
-    private final User user;
-    private final String ROLE_PREFIX = "ROLE_";
-    public UserAdapter(User user) {
-        this.user = user;
-    }
+public record UserAdapter(User user) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(ROLE_PREFIX + user.getRoleType().name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRoleType().name()));
     }
 
     @Override
@@ -47,9 +42,5 @@ public class UserAdapter implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public User getUser() {
-        return this.user;
     }
 }

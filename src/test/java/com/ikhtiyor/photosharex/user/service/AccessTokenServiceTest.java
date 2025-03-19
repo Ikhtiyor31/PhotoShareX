@@ -22,31 +22,32 @@ class AccessTokenServiceTest {
     void shouldCreateAccessToken_WhenEmailValid() {
         String email = "fake@example.com";
         var token = accessTokenService.createAccessToken(email);
-        assertNotNull(token.getAccess());
-        assertNotNull(token.getRefresh());
-        assertFalse(token.getAccess().isEmpty());
-        assertTrue(accessTokenService.isValidToken(token.getAccess()));
+        assertNotNull(token.access());
+        assertNotNull(token.refresh());
+        assertFalse(token.access().isEmpty());
+        assertTrue(accessTokenService.isValidToken(token.access()));
     }
 
     @Test
     void shouldGenerateInvalidToken_WhenEmail_isEmpty() {
         var token = accessTokenService.createAccessToken("");
-        String userEmail = accessTokenService.extractUserEmail(token.getAccess());
+        String userEmail = accessTokenService.extractUserEmail(token.access());
         assertTrue(userEmail.isEmpty());
     }
 
     @Test
     void shouldGenerateInvalidToken_WhenEmail_Null() {
         var token = accessTokenService.createAccessToken(null);
-        assertThrows(NullPointerException.class, () -> accessTokenService.extractUserEmail(token.getAccess()));
+        assertThrows(NullPointerException.class,
+            () -> accessTokenService.extractUserEmail(token.access()));
     }
 
     @Test
     void extractUserEmail() {
         String email = "mynew@gmail.com";
         var token = accessTokenService.createAccessToken(email);
-        String extractEmailFromAccessToken = accessTokenService.extractUserEmail(token.getAccess());
-        String extractEmailFromRefreshToken = accessTokenService.extractUserEmail(token.getRefresh());
+        String extractEmailFromAccessToken = accessTokenService.extractUserEmail(token.access());
+        String extractEmailFromRefreshToken = accessTokenService.extractUserEmail(token.refresh());
         assertFalse(extractEmailFromRefreshToken.isEmpty());
         assertFalse(extractEmailFromAccessToken.isEmpty());
         assertFalse(extractEmailFromAccessToken.isBlank());
@@ -58,8 +59,8 @@ class AccessTokenServiceTest {
     void isValidToken() {
         String email = "test@gmail.com";
         var token = accessTokenService.createAccessToken(email);
-        var isAccessTokenValid = accessTokenService.isValidToken(token.getAccess());
-        var isRefreshTokenValid = accessTokenService.isValidToken(token.getRefresh());
+        var isAccessTokenValid = accessTokenService.isValidToken(token.access());
+        var isRefreshTokenValid = accessTokenService.isValidToken(token.refresh());
         assertTrue(isAccessTokenValid);
         assertTrue(isRefreshTokenValid);
     }

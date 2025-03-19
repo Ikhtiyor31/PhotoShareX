@@ -20,7 +20,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
 class UserRepositoryTest {
@@ -36,10 +35,11 @@ class UserRepositoryTest {
 
 
     @BeforeEach
-    @Transactional
     void setUp() {
         userRepository.deleteAll();
         photoRepository.deleteAll();
+        entityManager.flush();
+        entityManager.clear();
     }
 
     @Test
@@ -119,7 +119,7 @@ class UserRepositoryTest {
 
         // Then
         User foundUser = userRepository.findUserByEmail(request.email())
-            .orElseThrow(()-> new UsernameNotFoundException("user not found"));
+            .orElseThrow(() -> new UsernameNotFoundException("user not found"));
         assertThat(foundUser).isNotNull();
         assertThat(user.getName()).isEqualTo(request.name());
         assertThat(user.getEmail()).isEqualTo(request.email());
@@ -238,6 +238,29 @@ class UserRepositoryTest {
 
         // Then
         assertThat(photos.size()).isEqualTo(1);
+    }
+
+    @Test
+    void shouldDeleteUserById() {
+        // Given
+        UserRegisterRequest request = new UserRegisterRequest(
+            "test",
+            "test@gmail.com",
+            "password",
+            ""
+        );
+
+        User user = User.createOf(request, "myencodedpassword");
+        User savedUser = userRepository.saveAndFlush(user);
+
+        savedUser.setDeleted();
+        entityManager.flush();
+        entityManager.clear();
+
+        Optional<User> optionalUser = userRepository.findById(savedUser.getId());
+
+        assertThat(optionalUser.isEmpty()).isEqualTo(true);
+
     }
 
 }

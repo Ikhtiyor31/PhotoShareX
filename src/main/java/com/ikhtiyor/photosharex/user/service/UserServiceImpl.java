@@ -5,12 +5,12 @@ import com.ikhtiyor.photosharex.exception.InvalidAccessTokenException;
 import com.ikhtiyor.photosharex.exception.ResourceNotFoundException;
 import com.ikhtiyor.photosharex.exception.UserAlreadyExistsException;
 import com.ikhtiyor.photosharex.user.dto.AccessTokenDTO;
+import com.ikhtiyor.photosharex.user.dto.PasswordResetRequest;
 import com.ikhtiyor.photosharex.user.dto.RegistrationCompleteEvent;
 import com.ikhtiyor.photosharex.user.dto.Token;
+import com.ikhtiyor.photosharex.user.dto.UserDTO;
 import com.ikhtiyor.photosharex.user.dto.UserLoginRequest;
 import com.ikhtiyor.photosharex.user.dto.UserRegisterRequest;
-import com.ikhtiyor.photosharex.user.dto.UserDTO;
-import com.ikhtiyor.photosharex.user.dto.PasswordResetRequest;
 import com.ikhtiyor.photosharex.user.dto.VerificationCodeRequest;
 import com.ikhtiyor.photosharex.user.model.User;
 import com.ikhtiyor.photosharex.user.model.VerificationCode;
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
 
         Token tokens = accessTokenService.createAccessToken(user.getEmail());
 
-        return new AccessTokenDTO(tokens.getAccess(), tokens.getRefresh());
+        return new AccessTokenDTO(tokens.access(), tokens.refresh());
     }
 
     @Override
@@ -114,7 +114,7 @@ public class UserServiceImpl implements UserService {
         if (isValidToken) {
             var email = accessTokenService.extractUserEmail(refreshToken);
             Token tokens = accessTokenService.createAccessToken(email);
-            return new AccessTokenDTO(tokens.getAccess(), tokens.getRefresh());
+            return new AccessTokenDTO(tokens.access(), tokens.refresh());
         }
 
         throw new InvalidAccessTokenException("Invalid or expired refresh token");
@@ -130,6 +130,15 @@ public class UserServiceImpl implements UserService {
 
         String encodePassword = passwordEncoder.encode(request.newPassword());
         user.updatePassword(encodePassword);
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+        var user = userRepository.findById(userId)
+            .orElseThrow(
+                () -> new UsernameNotFoundException("User not found with userId: " + userId));
+
+        user.setDeleted();
     }
 
     private User getUser(String email) {

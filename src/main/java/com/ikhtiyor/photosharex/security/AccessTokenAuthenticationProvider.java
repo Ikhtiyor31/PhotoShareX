@@ -33,8 +33,7 @@ public class AccessTokenAuthenticationProvider implements AuthenticationProvider
         }
 
         var username = accessTokenService.extractUserEmail(token);
-        var user = userRepository
-            .findUserByEmail(username)
+        var user = userRepository.findUserByEmail(username)
             .orElseThrow(() -> new BadCredentialsException("Invalid access token"));
 
         UserAdapter userAdapter = new UserAdapter(user);

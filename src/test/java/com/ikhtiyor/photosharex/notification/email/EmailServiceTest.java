@@ -28,11 +28,12 @@ class EmailServiceTest {
     @Test
     void sendVerificationEmail() {
         //Given
-        EmailDTO emailDto = new EmailDTO("recipient@example.com", "Test Subject", "Test Message");
+        EmailNotificationEvent emailNotificationEvent = new EmailNotificationEvent(
+            "recipient@example.com", "Test Subject", "Test Message");
         when(javaMailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
 
         // Act
-        emailService.sendVerificationEmail(emailDto);
+        emailService.sendVerificationEmail(emailNotificationEvent);
 
         // Assert
         verify(javaMailSender).send(any(MimeMessage.class));
@@ -41,10 +42,11 @@ class EmailServiceTest {
     @Test
     void sendVerificationEmailThrowException_When() {
         // Given
-        EmailDTO emailDto = new EmailDTO("recipient@example.com", "Test Subject", "Test Message");
+        EmailNotificationEvent emailNotificationEvent = new EmailNotificationEvent(
+            "recipient@example.com", "Test Subject", "Test Message");
         javaMailSender.createMimeMessage();
 
-        assertThatThrownBy(() -> emailService.sendVerificationEmail(emailDto))
+        assertThatThrownBy(() -> emailService.sendVerificationEmail(emailNotificationEvent))
             .isInstanceOf(EmailSendingFailException.class)
             .hasMessage("Error sending verification email");
 
