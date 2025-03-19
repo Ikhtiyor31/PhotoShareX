@@ -11,6 +11,7 @@ ENV MAIL_ADDRESS $MAIL_ADDRESS
 COPY credentials.json /app/credentials.json
 ENV GOOGLE_APPLICATION_CREDENTIALS /app/credentials.json
 
+RUN chmod +x ./gradlew
 RUN ./gradlew --no-daemon build
 
 FROM amazoncorretto:${JAVA_VERSION} as platform
