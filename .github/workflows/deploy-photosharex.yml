@@ -40,16 +40,6 @@ jobs:
       - name: Create credentials.json
         run: echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > credentials.json
 
-      - name: Check credentials.json
-        run: |
-          if [ -f "credentials.json" ]; then
-            echo "credentials.json exists"
-            jq '.' credentials.json > /dev/null && echo "Valid JSON" || echo "Invalid JSON"
-          else
-            echo "credentials.json does not exist"
-            exit 1
-          fi
-
       - name: Docker configuration
         run: |-
           gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://$GAR_LOCATION-docker.pkg.dev
@@ -63,6 +53,7 @@ jobs:
       # Build the Docker image
       - name: Build
         run: |-
+          cat credentials.json | jq '.' || echo "❌ Invalid JSON"
           docker compose -f "docker-compose.yml" build
         env:
           MAIL_ADDRESS: ${{ env.MAIL_ADDRESS }}
