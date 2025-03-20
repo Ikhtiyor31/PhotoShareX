@@ -9,9 +9,10 @@ ENV MAIL_ADDRESS $MAIL_ADDRESS
 
 # Copy the credentials file into the Docker image
 COPY credentials.json /app/credentials.json
+COPY credentials.json /app/src/main/resources/gcp-photosharex-storage-key.json
+COPY credentials.json /app/src/test/resources/gcp-photosharex-storage-key.json
 ENV GOOGLE_APPLICATION_CREDENTIALS /app/credentials.json
 
-RUN chmod +x ./gradlew
 RUN ./gradlew --no-daemon build
 
 FROM amazoncorretto:${JAVA_VERSION} as platform
