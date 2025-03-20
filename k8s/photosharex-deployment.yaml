@@ -28,9 +28,9 @@ spec:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /app/credentials.json
             - name: MAIL_ADDRESS
-              value: MAIL_ADDRESS
+              value: "${MAIL_ADDRESS}"
             - name: MAIL_PASS
-              value: MAIL_PASS
+              value: "${MAIL_PASS}"
             - name: SPRING_DATASOURCE_URL
               value: jdbc:postgresql://postgres-service:5432/photosharex
             - name: SPRING_DATASOURCE_USERNAME

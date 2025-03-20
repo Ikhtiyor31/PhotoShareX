@@ -64,10 +64,16 @@ jobs:
       - name: Publish
         run: |-
           docker push $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
-      - name: Update k8s/photosharex-deployment.yaml.yaml with GITHUB_SHA & PROJECT_ID
-        run: |-
+      - name: Update k8s/photosharex-deployment.yaml with env variables
+        run: |
+          # Update IMAGE_TAG and PROJECT_ID
           sed -i 's/\${IMAGE_TAG}/'"$GITHUB_SHA"'/g' k8s/photosharex-deployment.yaml
-          sed -i -e 's/${PROJECT_ID}/'"$PROJECT_ID"'/g' k8s/photosharex-deployment.yaml
+          sed -i -e 's/\${PROJECT_ID}/'"$PROJECT_ID"'/g' k8s/photosharex-deployment.yaml
+
+          # Replace MAIL_ADDRESS and MAIL_PASS, using a safer approach with different delimiter
+          sed -i "s|\${MAIL_ADDRESS}|${{ secrets.MAIL_ADDRESS }}|g" k8s/photosharex-deployment.yaml
+          sed -i "s|\${MAIL_PASS}|${{ secrets.MAIL_PASS }}|g" k8s/photosharex-deployment.yaml
+      
       - name: Deploy
         run: |-
           kubectl apply -f k8s/postgres-config.yaml
