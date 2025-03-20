@@ -38,7 +38,7 @@ jobs:
           credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
 
       - name: Create credentials.json
-        run: echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > $GITHUB_WORKSPACE/credentials.json
+        run: echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > credentials.json
 
       - name: Docker configuration
         run: |-
